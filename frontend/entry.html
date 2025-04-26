@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Szczegóły wpisu - TwojeFinanse</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; }
+    .sidebar { min-width: 200px; max-width: 200px; }
+    .content { flex: 1; padding: 20px; }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-light border-end">
+      <div class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action">Ustawienia</a>
+        <a href="add-entry.html" class="list-group-item list-group-item-action">Dodaj wpis</a>
+        <a href="entries.html" class="list-group-item list-group-item-action">Strona Główna</a>
+        <a href="documentation.html" class="list-group-item list-group-item-action">Dokumentacja</a>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="content">
+      <div class="container-fluid">
+        <h1 class="mb-4">Szczegóły wpisu</h1>
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <dl class="row">
+              <dt class="col-sm-3">Id</dt>
+              <dd class="col-sm-9">7</dd>
+
+              <dt class="col-sm-3">Nazwa wpisu</dt>
+              <dd class="col-sm-9">Kawa w kawiarni</dd>
+
+              <dt class="col-sm-3">Typ</dt>
+              <dd class="col-sm-9"><span class="badge bg-danger">Wydatek</span></dd>
+
+              <dt class="col-sm-3">Kategoria</dt>
+              <dd class="col-sm-9">Jedzenie</dd>
+
+              <dt class="col-sm-3">Data</dt>
+              <dd class="col-sm-9">2025-04-26</dd>
+
+              <dt class="col-sm-3">Kwota</dt>
+              <dd class="col-sm-9 text-danger">-12,50 PLN</dd>
+
+              <dt class="col-sm-3">Opis</dt>
+              <dd class="col-sm-9">Espresso i croissant</dd>
+            </dl>
+            <div class="mt-4">
+              <a href="entries.html" class="btn btn-secondary me-2"><i class="bi bi-arrow-left"></i> Powrót</a>
+              <a href="add-entry.html?edit=7" class="btn btn-primary me-2"><i class="bi bi-pencil"></i> Edytuj</a>
+              <button class="btn btn-danger"><i class="bi bi-trash"></i> Usuń</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

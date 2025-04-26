@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Dokumentacja - TwojeFinanse</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { min-height: 100vh; }
+    .sidebar { min-width: 200px; max-width: 200px; }
+    .content { flex: 1; padding: 20px; }
+    .doc-section { margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar bg-light border-end">
+      <div class="list-group list-group-flush">
+        <a href="#" class="list-group-item list-group-item-action">Ustawienia</a>
+        <a href="#" class="list-group-item list-group-item-action">Dodaj wpis</a>
+        <a href="dashboard.html" class="list-group-item list-group-item-action">Strona Główna</a>
+        <a href="#" class="list-group-item list-group-item-action active">Dokumentacja</a>
+      </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="container-fluid">
+        <h1 class="mb-4">Dokumentacja aplikacji</h1>
+
+        <div class="doc-section">
+          <h2>1. Jak dodać nowy wpis</h2>
+          <p>Aby dodać nowy wydatek lub przychód, przejdź do sekcji <strong>Dodaj wpis</strong> w menu bocznym. Wypełnij formularz, wybierz typ (Wydatek/Przychód), kategorię, datę oraz kwotę, a następnie kliknij przycisk <em>Dodaj</em>.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2>2. Zarządzanie kategoriami</h2>
+          <p>W ustawieniach możesz edytować istniejące kategorie wydatków i przychodów lub dodać nowe. Kliknij <strong>Ustawienia &gt; Kategorie</strong>, aby zobaczyć listę kategorii. Użyj przycisków <i class="bi bi-pencil"></i> i <i class="bi bi-trash"></i> do edycji lub usunięcia kategorii.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2>3. Generowanie raportów</h2>
+          <p>Raporty można pobrać w formacie PDF lub CSV. Przejdź do <strong>Strona Główna &gt; Raporty</strong> i wybierz zakres dat. Po zatwierdzeniu pojawią się linki do pobrania plików z wygenerowanymi danymi.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2>4. Eksport danych</h2>
+          <p>Aby wyeksportować wszystkie swoje dane wejściowe, przejdź do <strong>Ustawienia &gt; Eksport</strong>. Wybierz format pliku (CSV lub JSON) i kliknij <em>Eksportuj</em>. Plik zostanie pobrany na Twoje urządzenie.</p>
+        </div>
+
+        <div class="doc-section">
+          <h2>5. Najczęściej zadawane pytania (FAQ)</h2>
+          <ul>
+            <li><strong>Jak zmienić hasło?</strong> Przejdź do <em>Ustawienia &gt; Profil</em> i w sekcji <em>Bezpieczeństwo</em> wybierz <em>Zmień hasło</em>.</li>
+            <li><strong>Czy moje dane są bezpieczne?</strong> Tak, stosujemy szyfrowanie SSL oraz regularne kopie zapasowe.</li>
+            <li><strong>Kontakt z pomocą techniczną</strong> Możesz napisać do nas na adres <a href="mailto:help@twojefinanse.pl">help@twojefinanse.pl</a>.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
