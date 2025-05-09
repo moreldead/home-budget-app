@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-form {
+    background: #fff;
+    padding: 40px 30px; /* Zwiększyłem góra/dół */
+    border-radius: 10px; /* Lekko większe zaokrąglenie */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Ładniejszy cień */
+    width: 320px; /* Minimalnie większa szerokość */
+    box-sizing: border-box; /* Zapewnia, że padding nie rozwala szerokości */
+}
+
+.login-form h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 24px; /* Trochę większy nagłówek */
+}
+
+.login-form input {
+    width: 100%;
+    padding: 12px 15px; /* Lepszy padding w środku */
+    margin-bottom: 15px; /* Większy odstęp między polami */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+}
+
+.login-form button {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease; /* Płynniejsze hover */
+}
+
+.login-form button:hover {
+    background-color: #45a049;
+}
