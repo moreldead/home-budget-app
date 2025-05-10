@@ -1,0 +1,39 @@
+﻿@model IEnumerable<home_budget_app.Models.Expense>
+
+@{
+    ViewData["Title"] = "Wydatki";
+}
+
+<h1>Wydatki</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Dodaj nowy</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Kategoria</th>
+            <th>Data</th>
+            <th>Kwota</th>
+            <th>Komentarz</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Category</td>
+                <td>@item.Date.ToShortDateString()</td>
+                <td>@item.Amount.ToString("C")</td>
+                <td>@item.Notes</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edytuj</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Szczegóły</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Usuń</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

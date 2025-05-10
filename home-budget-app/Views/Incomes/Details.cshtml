@@ -1,0 +1,24 @@
+﻿@model home_budget_app.Models.Income
+
+@{
+    ViewData["Title"] = "Szczegóły przychodu";
+}
+
+<h1>Szczegóły przychodu</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Kategoria</dt>
+    <dd class="col-sm-10">@Model.Category</dd>
+
+    <dt class="col-sm-2">Data</dt>
+    <dd class="col-sm-10">@Model.Date.ToShortDateString()</dd>
+
+    <dt class="col-sm-2">Kwota</dt>
+    <dd class="col-sm-10">@Model.Amount.ToString("C")</dd>
+
+    <dt class="col-sm-2">Komentarz</dt>
+    <dd class="col-sm-10">@Model.Notes</dd>
+</dl>
+
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edytuj</a>
+<a asp-action="Index" class="btn btn-secondary">Wróć</a>

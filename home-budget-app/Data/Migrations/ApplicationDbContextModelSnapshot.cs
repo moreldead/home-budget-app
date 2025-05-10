@@ -213,107 +213,6 @@ namespace home_budget_app.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("home_budget_app.Models.Budget", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("Budgets");
-                });
-
-            modelBuilder.Entity("home_budget_app.Models.Category", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(200)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Description = "Rent, mortgage, repairs, etc.",
-                            Name = "Housing"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Description = "Electricity, water, internet, etc.",
-                            Name = "Utilities"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Description = "Food and household items",
-                            Name = "Groceries"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Description = "Car payments, gas, public transit",
-                            Name = "Transportation"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Description = "Movies, dining out, hobbies",
-                            Name = "Entertainment"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Description = "Medical expenses, insurance, etc.",
-                            Name = "Health"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Description = "Credit card payments, loans, etc.",
-                            Name = "Debt"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Description = "Emergency fund, investments, etc.",
-                            Name = "Savings"
-                        });
-                });
-
             modelBuilder.Entity("home_budget_app.Models.Expense", b =>
                 {
                     b.Property<int>("Id")
@@ -323,15 +222,10 @@ namespace home_budget_app.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("Category")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
@@ -342,8 +236,6 @@ namespace home_budget_app.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
 
                     b.ToTable("Expenses");
                 });
@@ -357,16 +249,14 @@ namespace home_budget_app.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Category")
+                        .HasColumnType("INTEGER");
+
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
@@ -426,35 +316,6 @@ namespace home_budget_app.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("home_budget_app.Models.Budget", b =>
-                {
-                    b.HasOne("home_budget_app.Models.Category", "Category")
-                        .WithMany("Budgets")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("home_budget_app.Models.Expense", b =>
-                {
-                    b.HasOne("home_budget_app.Models.Category", "Category")
-                        .WithMany("Expenses")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("home_budget_app.Models.Category", b =>
-                {
-                    b.Navigation("Budgets");
-
-                    b.Navigation("Expenses");
                 });
 #pragma warning restore 612, 618
         }

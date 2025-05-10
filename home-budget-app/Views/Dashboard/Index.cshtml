@@ -1,0 +1,120 @@
+﻿@using System.Text.Json
+@{
+    ViewData["Title"] = "Dashboard";
+
+    var months = ViewBag.Months as IEnumerable<dynamic>;
+    var selectedMonth = ViewBag.SelectedMonth ?? 1;
+    var monthName = months?.FirstOrDefault(m => (int)m.Number == (int)selectedMonth)?.Name ?? "Nieznany";
+
+    var expenseSums = ViewBag.ExpenseSumsByCategory as List<dynamic> ?? new List<dynamic>();
+    var expenseLabels = expenseSums.Select(x => (string)x.Category).ToList();
+    var expenseData = expenseSums.Select(x => Convert.ToDouble(x.Sum)).ToList();
+}
+
+<h1 class="mb-4">Dashboard</h1>
+
+<form method="get" class="row g-3 align-items-end mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Rok</label>
+        <select name="year" class="form-select">
+            @foreach (var y in ViewBag.Years)
+            {
+                <option value="@y" selected="@(y == ViewBag.SelectedYear)">@y</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Miesiąc</label>
+        <select name="month" class="form-select">
+            @foreach (var m in ViewBag.Months)
+            {
+                <option value="@m.Number" selected="@(m.Number == ViewBag.SelectedMonth)">@m.Name</option>
+            }
+        </select>
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">Pokaż</button>
+    </div>
+</form>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Suma wydatków</h5>
+            <p class="fs-4 text-danger">@ViewBag.ExpensesSum.ToString("C")</p>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Suma dochodów</h5>
+            <p class="fs-4 text-success">@ViewBag.IncomesSum.ToString("C")</p>
+        </div>
+    </div>
+</div>
+
+<!-- Wyświetlenie sumy wydatków z kategorii "Food" -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Suma wydatków na jedzenie</h5>
+            <p class="fs-4 text-warning">@ViewBag.FoodExpensesSum.ToString("C")</p>
+        </div>
+    </div>
+</div>
+
+<!-- Wyświetlenie średniej wydatków z kategorii "Food" w danym roku -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Średnia wydatków na jedzenie w roku (@ViewBag.SelectedYear)</h5>
+            <p class="fs-4 text-info">@ViewBag.FoodAverageYear.ToString("C")</p>
+        </div>
+    </div>
+</div>
+
+<h5>Wydatki i dochody w danym miesiącu (@monthName)</h5>
+<table class="table table-striped mb-4">
+    <thead>
+        <tr>
+            <th>Typ</th>
+            <th>Data</th>
+            <th>Kategoria</th>
+            <th>Kwota</th>
+            <th>Notatka</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var entry in ViewBag.RecentEntries)
+        {
+            <tr>
+                <td>@entry.Type</td>
+                <td>@entry.Date.ToString("yyyy-MM-dd")</td>
+                <td>@entry.Category</td>
+                <td>@entry.Amount.ToString("C")</td>
+                <td>@entry.Notes</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Wykres wydatków
+    var ctx = document.getElementById('expensesChart').getContext('2d');
+    var expensesChart = new Chart(ctx, {
+        type: 'pie', // Typ wykresu
+        data: {
+            labels: @Html.Raw(JsonSerializer.Serialize(expenseLabels)), // Kategorie
+            datasets: [{
+                label: 'Wydatki wg kategorii',
+                data: @Html.Raw(JsonSerializer.Serialize(expenseData)), // Summy wydatków
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'], // Kolory
+                borderColor: '#ffffff',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true
+        }
+    });
+</script>

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel;
 
 namespace home_budget_app.Models
 {
@@ -10,31 +10,24 @@ namespace home_budget_app.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string Description { get; set; } = string.Empty;
-
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Amount { get; set; }
+        [Display(Name = "Kategoria")]
+        public ExpenseCategory Category { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "Date")]
-        public DateTime Date { get; set; } = DateTime.Now;
+        [Display(Name = "Data")]
+        public DateTime Date { get; set; } = DateTime.Today;
 
         [Required]
-        [Display(Name = "Category")]
-        public int CategoryId { get; set; }
+        [Range(0.01, double.MaxValue)]
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "Kwota")]
+        public decimal Amount { get; set; }
 
-        // Optional notes about the expense
         [StringLength(500)]
+        [Display(Name = "Komentarz")]
         public string? Notes { get; set; }
 
-        // Navigation property
-        public virtual Category? Category { get; set; }
-
-        // UserId for tracking which user created this expense
         public string? UserId { get; set; }
     }
 
@@ -43,54 +36,91 @@ namespace home_budget_app.Models
         public int Id { get; set; }
 
         [Required]
-        [StringLength(100)]
-        public string Source { get; set; } = string.Empty;
-
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Amount { get; set; }
+        [Display(Name = "Kategoria")]
+        public IncomeCategory Category { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [Display(Name = "Date")]
-        public DateTime Date { get; set; } = DateTime.Now;
+        [Display(Name = "Data")]
+        public DateTime Date { get; set; } = DateTime.Today;
 
-        // Optional notes
+        [Required]
+        [Range(0.01, double.MaxValue)]
+        [Column(TypeName = "decimal(18,2)")]
+        [Display(Name = "Kwota")]
+        public decimal Amount { get; set; }
+
         [StringLength(500)]
+        [Display(Name = "Komentarz")]
         public string? Notes { get; set; }
 
-        // UserId for tracking which user created this income
         public string? UserId { get; set; }
     }
 
-    public class Budget
+    public enum ExpenseCategory
     {
-        public int Id { get; set; }
+        [Display(Name = "Zakupy codzienne")]
+        Food,
 
-        [Required]
-        [Display(Name = "Category")]
-        public int CategoryId { get; set; }
+        [Display(Name = "Opłaty i rachunki")]
+        Bills,
 
-        [Required]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than 0")]
-        [Column(TypeName = "decimal(18,2)")]
-        public decimal Amount { get; set; }
+        [Display(Name = "Czynsz")]
+        Rent,
 
-        [Required]
-        [DataType(DataType.Date)]
-        [Display(Name = "Start Date")]
-        public DateTime StartDate { get; set; } = DateTime.Now;
+        [Display(Name = "Transport")]
+        Transport,
 
-        [Required]
-        [DataType(DataType.Date)]
-        [Display(Name = "End Date")]
-        public DateTime EndDate { get; set; } = DateTime.Now.AddMonths(1);
+        [Display(Name = "Rozrywka")]
+        Entertainment,
 
-        // Navigation property
-        public virtual Category? Category { get; set; }
+        [Display(Name = "Zdrowie")]
+        Health,
 
-        // UserId for tracking which user created this budget
-        public string? UserId { get; set; }
+        [Display(Name = "Długi")]
+        Debt,
+
+        [Display(Name = "Ubrania")]
+        Clothes,
+
+        [Display(Name = "Wakacje")]
+        Holidays,
+
+        [Display(Name = "Subskrypcje")]
+        Subscriptions,
+
+        [Display(Name = "Samochód")]
+        Car,
+
+        [Display(Name = "Inne")]
+        Other
     }
+
+    public enum IncomeCategory
+    {
+        [Display(Name = "Wynagrodzenie")]
+        Salary,
+
+        [Display(Name = "Premia")]
+        Bonus,
+
+        [Display(Name = "Dywidendy")]
+        Dividends,
+
+        [Display(Name = "Inne")]
+        Other
+    }
+
+    public class ExpenseSummary
+    {
+        public string Category { get; set; }
+        public double Sum { get; set; }
+    }
+
+    public class IncomeSummary
+    {
+        public string Category { get; set; }
+        public double Sum { get; set; }
+    }
+
 }

@@ -1,0 +1,29 @@
+﻿@model home_budget_app.Models.Expense
+
+@{
+    ViewData["Title"] = "Usuń wydatek";
+}
+
+<h1>Usuń wydatek</h1>
+
+<h4>Czy na pewno chcesz usunąć?</h4>
+
+<dl class="row">
+    <dt class="col-sm-2">Kategoria</dt>
+    <dd class="col-sm-10">@Model.Category</dd>
+
+    <dt class="col-sm-2">Data</dt>
+    <dd class="col-sm-10">@Model.Date.ToShortDateString()</dd>
+
+    <dt class="col-sm-2">Kwota</dt>
+    <dd class="col-sm-10">@Model.Amount.ToString("C")</dd>
+
+    <dt class="col-sm-2">Komentarz</dt>
+    <dd class="col-sm-10">@Model.Notes</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Usuń</button>
+    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
+</form>
