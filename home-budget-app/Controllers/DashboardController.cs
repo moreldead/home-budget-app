@@ -24,11 +24,17 @@ namespace home_budget_app.Controllers
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            var currentDate = DateTime.Now;
-            year ??= currentDate.Year;
-            month ??= currentDate.Month;
+            // Jeśli year i month są null, przypisz bieżący rok i miesiąc
+            year ??= DateTime.Now.Year;
+            month ??= DateTime.Now.Month;
 
-            // Przekazanie wybranego roku i miesiąca do widoku
+            // Przygotowanie nazw miesięcy w kontrolerze
+            var monthNames = Enumerable.Range(1, 12)
+                .Select(month => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month))
+                .ToArray();
+
+            // Przekazanie do widoku
+            ViewBag.MonthNames = monthNames;
             ViewBag.SelectedYear = year;
             ViewBag.SelectedMonth = month;
 
@@ -55,16 +61,100 @@ namespace home_budget_app.Controllers
             var incomeQuery = _context.Incomes
                 .Where(i => i.UserId == userId && i.Date.Year == year && i.Date.Month == month);
 
-            // Pobranie sumy wydatków
             ViewBag.ExpensesSum = await expenseQuery.SumAsync(e => (double)e.Amount);
-
-            // Pobranie sumy dochodów
             ViewBag.IncomesSum = await incomeQuery.SumAsync(i => (double)i.Amount);
 
-            // Pobranie sumy wydatków z kategorii Food
-            ViewBag.FoodExpensesSum = await _context.Expenses
-                .Where(e => e.UserId == userId && e.Date.Year == year && e.Date.Month == month && e.Category == ExpenseCategory.Food)
+            // Pobranie sumy wydatków z całego wybranego roku
+            ViewBag.TotalExpensesYear = await _context.Expenses
+                .Where(e => e.UserId == userId && e.Date.Year == year)
                 .SumAsync(e => (double)e.Amount);
+
+            // Inicjalizacja słowników dla miesięcznych sum wydatków i dochodów
+            Dictionary<int, double> monthlyExpensesSums = new Dictionary<int, double>();
+            Dictionary<int, double> monthlyExpensesSumsChart = new Dictionary<int, double>();
+            Dictionary<int, double> monthlyIncomesSums = new Dictionary<int, double>();
+
+            // Iteracja przez wszystkie miesiące w roku
+            for (int monthIter = 1; monthIter <= 12; monthIter++)
+            {
+                // Suma wydatków za dany miesiąc
+                double monthlyExpenseSum = await _context.Expenses
+                    .Where(e => e.UserId == userId && e.Date.Year == year && e.Date.Month == monthIter)
+                    .SumAsync(e => (double)e.Amount) * -1;
+
+                // Suma dochodów za dany miesiąc
+                double monthlyIncomeSum = await _context.Incomes
+                    .Where(i => i.UserId == userId && i.Date.Year == year && i.Date.Month == monthIter)
+                    .SumAsync(i => (double)i.Amount);
+
+                // Dodajemy sumy do słowników
+                monthlyExpensesSums[monthIter] = monthlyExpenseSum;
+                monthlyExpensesSumsChart[monthIter] = monthlyExpenseSum;
+                monthlyIncomesSums[monthIter] = monthlyIncomeSum;
+            }
+
+            // Przekazanie słowników z sumami wydatków i dochodów do ViewBag
+            ViewBag.MonthlyExpensesSums = monthlyExpensesSums;
+            ViewBag.MonthlyExpensesSumsChart = monthlyExpensesSumsChart;
+            ViewBag.MonthlyIncomesSums = monthlyIncomesSums;
+
+            // Wyświetlanie sum wydatków dla każdej kategorii
+            Dictionary<string, double> expensesSums = new Dictionary<string, double>();
+
+            // Iterujemy przez wszystkie kategorie w ExpenseCategory
+            foreach (var category in Enum.GetValues(typeof(ExpenseCategory)).Cast<ExpenseCategory>())
+            {
+                // Obliczamy sumę wydatków dla danej kategorii
+                double categorySum = await _context.Expenses
+                    .Where(e => e.UserId == userId && e.Date.Year == year && e.Date.Month == month && e.Category == category)
+                    .SumAsync(e => (double)e.Amount);
+
+                // Przechowujemy sumę w słowniku z nazwą kategorii
+                expensesSums[category.ToString()] = categorySum;
+            }
+
+            // Przekazujemy słownik do ViewBag
+            ViewBag.ExpensesSums = expensesSums;
+
+
+            // Wyświetlanie sum wydatków w danym roku według kategorii
+            Dictionary<string, double> expensesSumsByCategory = new Dictionary<string, double>();
+
+            // Iterujemy przez wszystkie kategorie w ExpenseCategory
+            foreach (var category in Enum.GetValues(typeof(ExpenseCategory)).Cast<ExpenseCategory>())
+            {
+                // Obliczamy sumę wydatków dla danej kategorii w wybranym roku
+                double categorySum = await _context.Expenses
+                    .Where(e => e.UserId == userId && e.Date.Year == year && e.Category == category)
+                    .SumAsync(e => (double)e.Amount);
+
+                // Dodajemy sumę do słownika z nazwą kategorii
+                expensesSumsByCategory[category.GetDisplayName()] = categorySum; // Używamy GetDisplayName() do wyświetlania przyjaznej nazwy
+            }
+
+            // Przekazujemy słownik sum wydatków według kategorii do ViewBag
+            ViewBag.ExpensesSumsByCategory = expensesSumsByCategory;
+
+
+            {  // Wyświetlanie sum wydatków w wybranym miesiącu według kategorii
+                Dictionary<string, double> expensesSumsByCategoryForMonth = new Dictionary<string, double>();
+
+                // Iterujemy przez wszystkie kategorie w ExpenseCategory
+                foreach (var category in Enum.GetValues(typeof(ExpenseCategory)).Cast<ExpenseCategory>())
+                {
+                    // Obliczamy sumę wydatków dla danej kategorii w wybranym miesiącu
+                    double categorySum = await _context.Expenses
+                        .Where(e => e.UserId == userId && e.Date.Year == year && e.Date.Month == month && e.Category == category)
+                        .SumAsync(e => (double)e.Amount);
+
+                    // Dodajemy sumę do słownika z nazwą kategorii
+                    expensesSumsByCategoryForMonth[category.GetDisplayName()] = categorySum; // Używamy GetDisplayName() do wyświetlania przyjaznej nazwy
+                }
+
+                // Przekazujemy słownik sum wydatków według kategorii w wybranym miesiącu do ViewBag
+                ViewBag.ExpensesSumsByCategoryForMonth = expensesSumsByCategoryForMonth;
+            }
+
 
             // Pobranie średniej wydatków z kategorii Food w danym roku
             ViewBag.FoodAverageYear = await _context.Expenses
@@ -105,5 +195,6 @@ namespace home_budget_app.Controllers
 
             return View();
         }
+
     }
 }

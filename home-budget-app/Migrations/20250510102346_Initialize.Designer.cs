@@ -8,11 +8,11 @@ using home_budget_app.Data;
 
 #nullable disable
 
-namespace home_budget_app.Data.Migrations
+namespace home_budget_app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250508161913_InitialCleanSchema")]
-    partial class InitialCleanSchema
+    [Migration("20250510102346_Initialize")]
+    partial class Initialize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,11 +231,6 @@ namespace home_budget_app.Data.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
@@ -265,11 +260,6 @@ namespace home_budget_app.Data.Migrations
 
                     b.Property<string>("Notes")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Source")
-                        .IsRequired()
-                        .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")

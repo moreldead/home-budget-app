@@ -1,4 +1,9 @@
 ﻿@using System.Text.Json
+@using System.Globalization
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+
 @{
     ViewData["Title"] = "Dashboard";
 
@@ -52,25 +57,152 @@
     </div>
 </div>
 
-<!-- Wyświetlenie sumy wydatków z kategorii "Food" -->
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card p-3">
-            <h5>Suma wydatków na jedzenie</h5>
-            <p class="fs-4 text-warning">@ViewBag.FoodExpensesSum.ToString("C")</p>
+            <h5>Suma wydatków za cały rok @ViewBag.SelectedYear</h5>
+            <p class="fs-4 text-warning">
+                @ViewBag.TotalExpensesYear.ToString("C")
+            </p>
         </div>
     </div>
 </div>
 
-<!-- Wyświetlenie średniej wydatków z kategorii "Food" w danym roku -->
+<!-- Wyświetlanie sumy wydatków ze wszystkich miesięcy -->
 <div class="row mb-4">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="card p-3">
-            <h5>Średnia wydatków na jedzenie w roku (@ViewBag.SelectedYear)</h5>
-            <p class="fs-4 text-info">@ViewBag.FoodAverageYear.ToString("C")</p>
+            <h5>Sumy wydatków i dochodów za rok @ViewBag.SelectedYear</h5>
+
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Miesiąc</th>
+                        <th>Suma wydatków</th>
+                        <th>Suma dochodów</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int currentMonth = 1; currentMonth <= 12; currentMonth++)
+                    {
+                        <tr>
+                            <td>@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(currentMonth)</td>
+                            <td>
+                                @if (ViewBag.MonthlyExpensesSumsChart != null && ViewBag.MonthlyExpensesSumsChart.ContainsKey(currentMonth))
+                                {
+                                    @ViewBag.MonthlyExpensesSumsChart[currentMonth].ToString("C")
+                                }
+                                else
+                                {
+                                    @: "0,00"
+                                }
+                            </td>
+                            <td>
+                                @if (ViewBag.MonthlyIncomesSums != null && ViewBag.MonthlyIncomesSums.ContainsKey(currentMonth))
+                                {
+                                    @ViewBag.MonthlyIncomesSums[currentMonth].ToString("C")
+                                }
+                                else
+                                {
+                                    @: "0,00"
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card p-3">
+            <h5>Sumy wydatków i dochodów za rok @ViewBag.SelectedYear</h5>
+
+            <!-- Canvas do wykresu -->
+            <canvas id="incomeExpenseChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pobieramy dane z ViewBag i przekształcamy je na odpowiednią formę
+    var monthlyExpensesSumsChart = @Html.Raw(Json.Serialize(ViewBag.MonthlyExpensesSumsChart));
+    var monthlyIncomesSums = @Html.Raw(Json.Serialize(ViewBag.MonthlyIncomesSums));
+    var months = @Html.Raw(Json.Serialize(ViewBag.MonthNames)); // Przekazanie nazw miesięcy
+
+    // Przygotowanie danych do wykresu
+    var expenses = [];
+    var incomes = [];
+
+    // Wypełniamy dane na podstawie ViewBag (miesiące, wydatki, dochody)
+    for (var month = 1; month <= 12; month++) {
+        expenses.push(monthlyExpensesSumsChart[month] || 0); // Wydatki (jeśli brak, to 0)
+        incomes.push(monthlyIncomesSums[month] || 0); // Dochody (jeśli brak, to 0)
+    }
+
+    // Inicjalizacja wykresu
+    var ctx = document.getElementById('incomeExpenseChart').getContext('2d');
+    var incomeExpenseChart = new Chart(ctx, {
+        type: 'bar', // Typ wykresu - słupkowy
+        data: {
+            labels: months, // Miesiące na osi X
+            datasets: [{
+                label: 'Dochody',
+                data: incomes, // Dane dochodów
+                backgroundColor: 'rgba(54, 162, 235, 0.6)', // Kolor słupków dochodów
+                borderColor: 'rgba(54, 162, 235, 1)', // Kolor obramowania słupków dochodów
+                borderWidth: 1,
+                // Słupki do góry
+                datalabels: {
+                    anchor: 'end',
+                    align: 'top'
+                }
+            },
+            {
+                label: 'Wydatki',
+                data: expenses, // Dane wydatków
+                backgroundColor: 'rgba(255, 99, 132, 0.6)', // Kolor słupków wydatków
+                borderColor: 'rgba(255, 99, 132, 1)', // Kolor obramowania słupków wydatków
+                borderWidth: 1,
+                // Słupki w dół
+                datalabels: {
+                    anchor: 'end',
+                    align: 'bottom'
+                }
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    stacked: true,
+                },
+                y: {
+                    beginAtZero: true, // Oś Y zaczyna się od 0
+                    ticks: {
+                        callback: function(value) {
+                            return value.toLocaleString(); // Formatowanie liczb
+                        }
+
+                    }
+                }
+
+
+            },
+            responsive: true, // Zmienia się rozmiar wykresu w zależności od rozmiaru ekranu
+            plugins: {
+                datalabels: {
+                    display: true,
+                    align: 'center', // Ustawiamy etykiety w środku słupków
+                    color: '#fff' // Kolor tekstu etykiety
+                }
+            }
+        }
+    });
+</script>
+
+
 
 <h5>Wydatki i dochody w danym miesiącu (@monthName)</h5>
 <table class="table table-striped mb-4">
@@ -118,3 +250,96 @@
         }
     });
 </script>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card p-3">
+            <h5>Suma wydatków w danym roku według kategorii</h5>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Kategoria</th>
+                        <th>Suma wydatków</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in ViewBag.ExpensesSumsByCategory as Dictionary<string, double>)
+                    {
+                        <tr>
+                            <td>@category.Key</td> <!-- Kategoria (nazwa wyświetlana) -->
+                            <td>@category.Value.ToString("C")</td> <!-- Suma wydatków w formacie waluty -->
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card p-3">
+            <h5>Suma wydatków w wybranym miesiącu (@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(ViewBag.SelectedMonth)) według kategorii</h5>
+
+            <!-- Canvas do wykresu kołowego -->
+            <canvas id="expensesPieChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pobieramy dane z ViewBag i przekształcamy je na odpowiednią formę
+    var expensesSumsByCategoryForMonth = @Html.Raw(Json.Serialize(ViewBag.ExpensesSumsByCategoryForMonth));
+
+    // Przygotowanie danych do wykresu kołowego
+    var categories = Object.keys(expensesSumsByCategoryForMonth);  // Kategorie
+    var sums = Object.values(expensesSumsByCategoryForMonth);     // Summy wydatków
+
+    // Inicjalizacja wykresu kołowego
+    var ctx = document.getElementById('expensesPieChart').getContext('2d');
+    var expensesPieChart = new Chart(ctx, {
+        type: 'pie', // Typ wykresu - kołowy
+        data: {
+            labels: categories,  // Kategorie na etykietach
+            datasets: [{
+                data: sums,  // Summy wydatków dla każdej kategorii
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#FF9F40', '#FFCD56', '#6B5B95', '#F7B7A3', '#FFD700', '#90EE90', '#FF6347', '#C71585'],  // Kolory dla każdego segmentu
+                hoverBackgroundColor: ['#FF4563', '#36A2C3', '#FFD045', '#4BFF9C', '#FF7F51', '#FFDC4F', '#6B3C93', '#F6A4B8', '#FFDD57', '#A8F0B9', '#FF736D', '#D12C8C'], // Kolory dla segmentów po najechaniu
+            }]
+        },
+        options: {
+            responsive: true, // Zmienia się rozmiar wykresu w zależności od rozmiaru ekranu
+            plugins: {
+                legend: {
+                    position: 'top', // Pozycja legendy
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' }); // Formatowanie wartości w tooltip
+                        }
+                    }
+                },
+                // Wtyczka do wyświetlania datalabels z procentami
+                datalabels: {
+                    formatter: (value, ctx) => {
+                        // Obliczanie procentu
+                        var total = ctx.dataset.data.reduce((acc, curr) => acc + curr, 0); // Suma wszystkich wartości
+                        var percentage = ((value / total) * 100).toFixed(2); // Obliczamy procent z dokładnością do dwóch miejsc po przecinku
+                        return percentage + '%'; // Zwracamy procent
+                    },
+                    color: '#fff',  // Kolor etykiety
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    },
+                    anchor: 'center', // Pozycjonowanie etykiety w środku
+                    align: 'center',  // Wyrównanie etykiety w środku
+                }
+            }
+        }
+    });
+</script>
+
+
