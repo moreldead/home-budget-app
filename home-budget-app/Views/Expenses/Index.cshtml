@@ -136,13 +136,9 @@
                 <th scope="col">Kategoria</th>
                 <th scope="col">
                     Data
-                    <a href="@Url.Action("Index", new { page = 1,
-                                    pageSize = selectedPageSize,
-                                    sortOrder = "date_asc",
-                                    categoryFilter = categoryFilter,
-                                    yearFilter = yearFilter,
-                                    monthFilter = monthFilter })" ...>
-
+                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "date_asc", categoryFilter = categoryFilter })" title="Od najstarszych">
+                        <i class="bi bi-arrow-up"></i>
+                    </a>
                     <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "date_desc", categoryFilter = categoryFilter })" title="Od najnowszych">
                         <i class="bi bi-arrow-down"></i>
                     </a>
