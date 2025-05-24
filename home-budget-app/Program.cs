@@ -30,6 +30,12 @@ public class Program
 
         var app = builder.Build();
 
+        app.Use(async (context, next) =>
+        {
+            context.Response.Headers.Append("Content-Type", "text/html; charset=utf-8");
+            await next();
+        });
+
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
