@@ -113,13 +113,13 @@ namespace home_budget_app.Models
 
     public class ExpenseSummary
     {
-        public string Category { get; set; }
+        public string? Category { get; set; }
         public double Sum { get; set; }
     }
 
     public class IncomeSummary
     {
-        public string Category { get; set; }
+        public string? Category { get; set; }
         public double Sum { get; set; }
     }
 

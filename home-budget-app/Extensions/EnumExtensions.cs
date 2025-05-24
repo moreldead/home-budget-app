@@ -1,18 +1,30 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection; // potrzebne dla getfield
 
 namespace home_budget_app.Extensions
 {
     public static class EnumExtensions
     {
-        // Rozszerzenie dla wszystkich enumów, które obsługują atrybut Display
+        // rozszerzenie dla wszystkich enumów, które obsługują atrybut display
         public static string GetDisplayName(this Enum enumValue)
         {
-            var field = enumValue.GetType().GetField(enumValue.ToString());
-            var attribute = (DisplayAttribute)Attribute.GetCustomAttribute(field, typeof(DisplayAttribute));
+            if (enumValue == null) // dodano sprawdzenie null dla samego enumvalue
+            {
+                return string.Empty;
+            }
 
-            return attribute?.Name ?? enumValue.ToString(); // Zwraca nazwę przypisaną w atrybucie Display lub nazwę enumu
+            FieldInfo? field = enumValue.GetType().GetField(enumValue.ToString()); // pole może być null
+
+            if (field == null) // poprawka - sprawdź czy pole istnieje
+            {
+                return enumValue.ToString(); // zwróć domyślną nazwę, jeśli pole nie zostało znalezione
+            }
+
+            DisplayAttribute? attribute = (DisplayAttribute?)Attribute.GetCustomAttribute(field, typeof(DisplayAttribute)); // atrybut może być null
+
+            return attribute?.Name ?? enumValue.ToString(); // zwraca nazwę przypisaną w atrybucie display lub nazwę enumu
         }
     }
 }
