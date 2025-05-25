@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using home_budget_app.Data;
-using home_budget_app.Models; // <<< --- ADD THIS USING DIRECTIVE
+using home_budget_app.Models;
 
 namespace home_budget_app;
 
@@ -11,7 +11,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -19,8 +18,8 @@ public class Program
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        // Use ApplicationUser here
-        builder.Services.AddDefaultIdentity<ApplicationUser>(options => // <--- CHANGE IdentityUser to ApplicationUser
+        // uzywaj ApplicationUser
+        builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = false; // Set to true in production if needed
             options.SignIn.RequireConfirmedEmail = false;  // Set to true in production if needed
@@ -37,7 +36,7 @@ public class Program
             await next();
         });
 
-        // Configure the HTTP request pipeline.
+        // konfiguracja pipelinu http request
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
@@ -53,22 +52,22 @@ public class Program
 
         app.UseRouting();
 
-        app.UseAuthorization(); // Make sure this comes after UseRouting
+        app.UseAuthorization();
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        app.MapRazorPages(); // If you have scaffolded Identity UI, it uses Razor Pages
+        app.MapRazorPages();
 
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<ApplicationDbContext>();
-            // Use ApplicationUser here as well
-            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>(); // <--- CHANGE IdentityUser to ApplicationUser
+            
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
 
-            // Ensure your DbSeeder.Seed method's signature matches this UserManager type
+            
             DbSeeder.Seed(context, userManager);
         }
 
