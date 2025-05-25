@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using home_budget_app.Data;
+using home_budget_app.Models; // <<< --- ADD THIS USING DIRECTIVE
 
 namespace home_budget_app;
 
@@ -13,16 +14,16 @@ public class Program
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        // Changed from UseSqlServer to UseSqlite
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+        // Use ApplicationUser here
+        builder.Services.AddDefaultIdentity<ApplicationUser>(options => // <--- CHANGE IdentityUser to ApplicationUser
         {
-            options.SignIn.RequireConfirmedAccount = false;
-            options.SignIn.RequireConfirmedEmail = false;
+            options.SignIn.RequireConfirmedAccount = false; // Set to true in production if needed
+            options.SignIn.RequireConfirmedEmail = false;  // Set to true in production if needed
         })
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
@@ -44,30 +45,30 @@ public class Program
         else
         {
             app.UseExceptionHandler("/Home/Error");
-            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
 
-        
         app.UseHttpsRedirection();
         app.UseStaticFiles();
 
         app.UseRouting();
 
-        app.UseAuthorization();
+        app.UseAuthorization(); // Make sure this comes after UseRouting
 
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        app.MapRazorPages();
+        app.MapRazorPages(); // If you have scaffolded Identity UI, it uses Razor Pages
 
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<ApplicationDbContext>();
-            var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+            // Use ApplicationUser here as well
+            var userManager = services.GetRequiredService<UserManager<ApplicationUser>>(); // <--- CHANGE IdentityUser to ApplicationUser
 
+            // Ensure your DbSeeder.Seed method's signature matches this UserManager type
             DbSeeder.Seed(context, userManager);
         }
 

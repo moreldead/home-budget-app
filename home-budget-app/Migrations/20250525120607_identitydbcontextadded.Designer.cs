@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using home_budget_app.Data;
 
@@ -10,9 +11,11 @@ using home_budget_app.Data;
 namespace home_budget_app.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250525120607_identitydbcontextadded")]
+    partial class identitydbcontextadded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.14");
@@ -222,6 +225,9 @@ namespace home_budget_app.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Category")
                         .HasColumnType("INTEGER");
 
@@ -236,6 +242,8 @@ namespace home_budget_app.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("UserId");
 
@@ -251,6 +259,9 @@ namespace home_budget_app.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Category")
                         .HasColumnType("INTEGER");
 
@@ -265,6 +276,8 @@ namespace home_budget_app.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserId");
 
                     b.HasIndex("UserId");
 
@@ -324,8 +337,12 @@ namespace home_budget_app.Migrations
 
             modelBuilder.Entity("home_budget_app.Models.Expense", b =>
                 {
-                    b.HasOne("home_budget_app.Models.ApplicationUser", "User")
+                    b.HasOne("home_budget_app.Models.ApplicationUser", null)
                         .WithMany("Expenses")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("home_budget_app.Models.ApplicationUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");
@@ -333,8 +350,12 @@ namespace home_budget_app.Migrations
 
             modelBuilder.Entity("home_budget_app.Models.Income", b =>
                 {
-                    b.HasOne("home_budget_app.Models.ApplicationUser", "User")
+                    b.HasOne("home_budget_app.Models.ApplicationUser", null)
                         .WithMany("Incomes")
+                        .HasForeignKey("ApplicationUserId");
+
+                    b.HasOne("home_budget_app.Models.ApplicationUser", "User")
+                        .WithMany()
                         .HasForeignKey("UserId");
 
                     b.Navigation("User");

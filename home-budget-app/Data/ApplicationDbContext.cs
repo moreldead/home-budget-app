@@ -4,7 +4,7 @@ using home_budget_app.Models;
 
 namespace home_budget_app.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -35,6 +35,22 @@ namespace home_budget_app.Data
                 entity.Property(i => i.Date).IsRequired();
             });
 
+            // konfiguracja relacji dla expense
+            // In ApplicationDbContext.OnModelCreating method:
+
+            // Relationship for Expense
+            builder.Entity<Expense>()
+                .HasOne(e => e.User)               // Expense has one User
+                .WithMany(u => u.Expenses)       // User has many Expenses (using the Expenses collection)
+                .HasForeignKey(e => e.UserId)
+                .IsRequired(false); // UserId is nullable, so this is fine
+
+            // Relationship for Income
+            builder.Entity<Income>()
+                .HasOne(i => i.User)               // Income has one User
+                .WithMany(u => u.Incomes)        // User has many Incomes (using the Incomes collection)
+                .HasForeignKey(i => i.UserId)
+                .IsRequired(false); // UserId is nullable, so this is fine
         }
     }
 }

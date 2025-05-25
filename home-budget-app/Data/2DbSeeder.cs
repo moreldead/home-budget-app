@@ -1,11 +1,12 @@
 ﻿using home_budget_app.Models;
+using home_budget_app.Data;
 using Microsoft.AspNetCore.Identity;
 
 namespace home_budget_app.Data
 {
     public static class DbSeeder
     {
-        public static void Seed(ApplicationDbContext context, UserManager<IdentityUser> userManager)
+        public static void Seed(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             // Upewnij się, że baza istnieje
             context.Database.EnsureCreated();
