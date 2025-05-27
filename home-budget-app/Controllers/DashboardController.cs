@@ -1,7 +1,6 @@
-﻿// Plik: home-budget-app/Controllers/DashboardController.cs
-using home_budget_app.Data;
+﻿using home_budget_app.Data;
 using home_budget_app.Extensions;
-using home_budget_app.Models; // Make sure this using statement is present for MonthlySummaryViewModel
+using home_budget_app.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +23,7 @@ namespace home_budget_app.Controllers
             _context = context;
         }
 
-        // Signature updated to include summarySortOrderParam
+        
         public async Task<IActionResult> Index(int? year, int? month, string sortOrder = "date_desc", string summarySortOrderParam = "summary_month_asc")
         {
             var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -34,7 +33,7 @@ namespace home_budget_app.Controllers
 
             ViewBag.SelectedYear = year;
             ViewBag.SelectedMonth = month;
-            ViewBag.SortOrder = sortOrder; // For the main transaction table
+            ViewBag.SortOrder = sortOrder;
 
             var monthNames = Enumerable.Range(1, 12)
                 .Select(mVal => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(mVal))
@@ -81,7 +80,7 @@ namespace home_budget_app.Controllers
                     .SumAsync(i => (double)i.Amount);
             }
             ViewBag.MonthlyExpensesSumsChart = monthlyExpensesSumsChart;
-            ViewBag.MonthlyIncomesSums = monthlyIncomesSums; // Used for both chart and summary table
+            ViewBag.MonthlyIncomesSums = monthlyIncomesSums; 
 
             Dictionary<int, double> monthlyDisplayExpensesSums = new Dictionary<int, double>();
             for (int monthIter = 1; monthIter <= 12; monthIter++)
@@ -90,11 +89,11 @@ namespace home_budget_app.Controllers
                     .Where(e => e.UserId == userId && e.Date.Year == year && e.Date.Month == monthIter)
                     .SumAsync(e => (double)e.Amount);
             }
-            ViewBag.MonthlyExpensesSums = monthlyDisplayExpensesSums; // This is specifically for the summary table if different logic needed than chart
+            ViewBag.MonthlyExpensesSums = monthlyDisplayExpensesSums; 
 
-            // --- New logic for the Yearly Summary Table (Sumy wydatków i dochodów za rok) ---
+            
             var monthlySummaries = new List<MonthlySummaryViewModel>();
-            // Use the ViewBag properties that are already populated for the table
+           
             var currentMonthlyExpenses = ViewBag.MonthlyExpensesSums as Dictionary<int, double> ?? new Dictionary<int, double>();
             var currentMonthlyIncomes = ViewBag.MonthlyIncomesSums as Dictionary<int, double> ?? new Dictionary<int, double>();
 
@@ -103,7 +102,7 @@ namespace home_budget_app.Controllers
                 monthlySummaries.Add(new MonthlySummaryViewModel
                 {
                     MonthNumber = m,
-                    MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m), // Or your preferred culture
+                    MonthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(m), 
                     TotalExpenses = currentMonthlyExpenses.TryGetValue(m, out var exp) ? exp : 0,
                     TotalIncomes = currentMonthlyIncomes.TryGetValue(m, out var inc) ? inc : 0
                 });
@@ -111,7 +110,7 @@ namespace home_budget_app.Controllers
 
             ViewBag.CurrentSummarySort = summarySortOrderParam;
 
-            switch (summarySortOrderParam.ToLower()) // Ensure case-insensitivity
+            switch (summarySortOrderParam.ToLower()) 
             {
                 case "summary_month_desc":
                     monthlySummaries = monthlySummaries.OrderByDescending(s => s.MonthNumber).ToList();
@@ -131,7 +130,6 @@ namespace home_budget_app.Controllers
                 case "summary_month_asc":
                 default:
                     monthlySummaries = monthlySummaries.OrderBy(s => s.MonthNumber).ToList();
-                    // Ensure default is reflected in ViewBag if summarySortOrderParam was null/empty or didn't match
                     if (string.IsNullOrEmpty(summarySortOrderParam) || !summarySortOrderParam.ToLower().StartsWith("summary_"))
                     {
                         ViewBag.CurrentSummarySort = "summary_month_asc";
@@ -139,7 +137,6 @@ namespace home_budget_app.Controllers
                     break;
             }
             ViewBag.MonthlySummaries = monthlySummaries;
-            // --- End of New logic for Yearly Summary Table ---
 
             Dictionary<string, double> expensesSumsByCategory = new Dictionary<string, double>();
             foreach (var category in Enum.GetValues(typeof(ExpenseCategory)).Cast<ExpenseCategory>())
@@ -233,8 +230,6 @@ namespace home_budget_app.Controllers
         }
     }
 
-    // This ViewModel is defined inline in your original code.
-    // It's generally better practice to have ViewModels in separate files in a Models or ViewModels folder.
     public class TransactionViewModel
     {
         public int Id { get; set; }

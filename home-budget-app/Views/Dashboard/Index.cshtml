@@ -1,4 +1,4 @@
-﻿@* Plik: Views/Dashboard/Index.cshtml *@
+﻿@*Views/Dashboard/Index.cshtml *@
 @using System.Text.Json
 @using System.Globalization
 @using home_budget_app.Models;
@@ -9,12 +9,12 @@
 @{
     ViewData["Title"] = "Dashboard";
 
-    var monthsForSelect = ViewBag.Months as IEnumerable<dynamic>; // Zmieniono nazwę dla jasności
-    var selectedMonth = ViewBag.SelectedMonth ?? DateTime.Now.Month; // Zapewniamy domyślną wartość
-    var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year; // Zapewniamy domyślną wartość
-    var monthName = monthsForSelect?.FirstOrDefault(m => (int)m.Number == (int)selectedMonth)?.Name ?? CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth); //
+    var monthsForSelect = ViewBag.Months as IEnumerable<dynamic>;
+    var selectedMonth = ViewBag.SelectedMonth ?? DateTime.Now.Month; // domyślna wartość
+    var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year; // domyślna wartość
+    var monthName = monthsForSelect?.FirstOrDefault(m => (int)m.Number == (int)selectedMonth)?.Name ?? CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth); 
 
-    // Pobieramy currentSortOrder z ViewBag, ustawiony przez kontroler
+    // currentSortOrder z viewbag ustawiony przez kontroler
     string currentSortOrder = ViewBag.SortOrder ?? "date_desc";
 }
 
@@ -22,24 +22,24 @@
 
 <h1 class="mb-4">Dashboard</h1>
 
-@* Formularz filtrów przekazuje teraz także sortOrder *@
+
 <form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
-    <input type="hidden" name="sortOrder" value="@currentSortOrder" /> @* Przekazujemy sortOrder przy zmianie filtrów roku/miesiąca *@
+    <input type="hidden" name="sortOrder" value="@currentSortOrder" /> @* przekazujemy sortOrder przy zmianie filtrów roku/miesiąca *@
     <div class="col-md-3">
         <label class="form-label">Rok</label>
         <select name="year" class="form-select">
             @foreach (var y in ViewBag.Years) //
             {
-                <option value="@y" selected="@(y == selectedYear)">@y</option> @* Używamy selectedYear z góry *@
+                <option value="@y" selected="@(y == selectedYear)">@y</option> @* używamy selectedYear z góry *@
             }
         </select>
     </div>
     <div class="col-md-3">
         <label class="form-label">Miesiąc</label>
         <select name="month" class="form-select">
-            @foreach (var m in monthsForSelect) // Używamy monthsForSelect
+            @foreach (var m in monthsForSelect) // używamy monthsForSelect
             {
-                <option value="@m.Number" selected="@(m.Number == selectedMonth)">@m.Name</option> @* Używamy selectedMonth z góry *@
+                <option value="@m.Number" selected="@(m.Number == selectedMonth)">@m.Name</option> @* używamy selectedMonth z góry *@
             }
         </select>
     </div>
@@ -48,7 +48,7 @@
     </div>
 </form>
 
-@* ... (sekcje z sumami i wykresami - pozostają bez zmian) ... *@
+
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card p-3">
@@ -78,7 +78,7 @@
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card p-3">
-            <h5>Sumy wydatków i dochodów za rok @selectedYear</h5> @* Using selectedYear from the C# block *@
+            <h5>Sumy wydatków i dochodów za rok @selectedYear</h5> 
             <table class="table table-bordered">
                 <thead>
                     <tr>
@@ -146,10 +146,6 @@
         </div>
     </div>
 </div>
-@* Koniec sekcji bez zmian *@
-
-@* Plik: Views/Dashboard/Index.cshtml *@
-@* ... (początek pliku, definicje ViewBag, formularz filtrów, inne karty i wykresy - bez zmian) ... *@
 
 <h5>Wydatki i dochody w miesiącu: @monthName (@selectedYear)</h5>
 <div class="table-responsive">
@@ -217,7 +213,6 @@
                             <td>@entry.Type</td>
                             <td>@entry.Date.ToString("yyyy-MM-dd")</td>
                             <td>@entry.Category</td>
-                            @* Poprawione wyświetlanie kwoty - upewnijmy się, że Amount jest decimal *@
                             <td class="@(entry.Type == "Wydatek" ? "text-danger" : "text-success")">
                                 @{
                                     decimal displayAmount = entry.Amount;
@@ -251,9 +246,6 @@
     </table>
 </div>
 
-@* ... (reszta pliku, skrypty do wykresów itp.) ... *@
-
-@* ... (skrypty dla wykresów - pozostają bez zmian, ale upewnij się, że `ViewBag.MonthNames` jest poprawnie przekazywany do wykresu liniowego/słupkowego) ... *@
 <script>
     // Skrypt dla wykresu incomeExpenseChart (miesięczne sumy)
     var monthlyExpensesSumsForChart = @Html.Raw(Json.Serialize(ViewBag.MonthlyExpensesSumsChart ?? new Dictionary<int, double>())); //
@@ -371,7 +363,6 @@
         });
     }
 
-    // Kod dla wykresu expensesChart (tego starszego, jeśli nadal jest potrzebny)
     // var expenseLabels = @Html.Raw(JsonSerializer.Serialize(ViewBag.ExpenseSumsByCategory?.Keys ?? new List<string>()));
     // var expenseData = @Html.Raw(JsonSerializer.Serialize(ViewBag.ExpenseSumsByCategory?.Values ?? new List<double>()));
     // if (document.getElementById('expensesChart')) {
@@ -393,7 +384,6 @@
     // }
 </script>
 
-@* Tabelka sum wydatków wg kategorii za CAŁY ROK - pozostaje bez zmian *@
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card p-3">
@@ -427,7 +417,7 @@
 </div>
 
 
-@* Wykres kołowy dla wydatków w WYBRANYM MIESIĄCU - pozostaje bez zmian *@
+@* Wykres kołowy dla wydatków w WYBRANYM MIESIĄCU *@
 <div class="row mb-4">
     <div class="col-md-6">
         <div class="card p-3">
