@@ -22,7 +22,7 @@ namespace home_budget_app.Controllers
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        // get: przychody - lista z paginacją sortowaniem  filtrami
+        // get: przychody - lista z paginacją, sortowaniem i filtrami
         public async Task<IActionResult> Index(
             int page = 1,
             int pageSize = 10,
@@ -31,241 +31,256 @@ namespace home_budget_app.Controllers
             int? yearFilter = null,
             int? monthFilter = null)
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; // userid może być null
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
                 return Challenge();
             }
 
-            IQueryable<Income> baseQuery = _context.Incomes.Where(i => i.UserId == userId);
+            IQueryable<Income> baseQuery = _context.Incomes.Where(i => i.UserId == userId); //
 
             if (yearFilter.HasValue)
             {
-                baseQuery = baseQuery.Where(i => i.Date.Year == yearFilter.Value);
+                baseQuery = baseQuery.Where(i => i.Date.Year == yearFilter.Value); //
             }
             if (monthFilter.HasValue)
             {
-                baseQuery = baseQuery.Where(i => i.Date.Month == monthFilter.Value);
+                baseQuery = baseQuery.Where(i => i.Date.Month == monthFilter.Value); //
             }
             if (!string.IsNullOrEmpty(categoryFilter) && Enum.TryParse<IncomeCategory>(categoryFilter, out var catEnum))
             {
-                baseQuery = baseQuery.Where(i => i.Category == catEnum);
+                baseQuery = baseQuery.Where(i => i.Category == catEnum); //
             }
 
             sortOrder = string.IsNullOrWhiteSpace(sortOrder) ? "date_desc" : sortOrder.ToLower();
-            ViewBag.SortOrder = sortOrder; 
+            ViewBag.SortOrder = sortOrder; //
 
-            switch (sortOrder) 
+            IQueryable<Income> queryableItems = baseQuery;
+            List<Income> items;
+            int totalItems;
+
+            switch (sortOrder)
             {
+                // NOWE PRZYPADKI DLA SORTOWANIA PO ID
+                case "id_asc":
+                    queryableItems = queryableItems.OrderBy(i => i.Id);
+                    break;
+                case "id_desc":
+                    queryableItems = queryableItems.OrderByDescending(i => i.Id);
+                    break;
+                // Pozostałe przypadki sortowania
                 case "category_asc":
-                    baseQuery = baseQuery.OrderBy(i => i.Category).ThenByDescending(i => i.Date);
+                    queryableItems = queryableItems.OrderBy(i => i.Category).ThenByDescending(i => i.Date); //
                     break;
                 case "category_desc":
-                    baseQuery = baseQuery.OrderByDescending(i => i.Category).ThenByDescending(i => i.Date);
+                    queryableItems = queryableItems.OrderByDescending(i => i.Category).ThenByDescending(i => i.Date); //
                     break;
                 case "date_asc":
-                    baseQuery = baseQuery.OrderBy(i => i.Date);
+                    queryableItems = queryableItems.OrderBy(i => i.Date); //
                     break;
-                case "amount_asc":
-                    baseQuery = baseQuery.OrderBy(i => i.Amount);
-                    break;
-                case "amount_desc":
-                    baseQuery = baseQuery.OrderByDescending(i => i.Amount);
-                    break;
-                default: // jeśli sortorder to "date_desc" lub nieznana wartość
-                    baseQuery = baseQuery.OrderByDescending(i => i.Date);
-                    ViewBag.SortOrder = "date_desc"; 
+                // "amount_asc" i "amount_desc" są obsługiwane po switchu
+                case "date_desc":
+                default:
+                    queryableItems = queryableItems.OrderByDescending(i => i.Date); //
+                    if (sortOrder != "amount_asc" && sortOrder != "amount_desc" && sortOrder != "id_asc" && sortOrder != "id_desc") // dodano sprawdzenie id_asc/id_desc
+                    {
+                        ViewBag.SortOrder = "date_desc";
+                    }
                     break;
             }
 
-            var totalItems = await baseQuery.CountAsync();
-            var items = await baseQuery
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
+            totalItems = await queryableItems.CountAsync();
 
-            ViewBag.CurrentPage = page;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalItems = totalItems;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
-            ViewBag.CategoryFilter = categoryFilter;
-            ViewBag.YearFilter = yearFilter;
-            ViewBag.MonthFilter = monthFilter;
-
-            var years = await _context.Incomes
-                .Where(i => i.UserId == userId)
-                .Select(i => i.Date.Year)
-                .Distinct()
-                .ToListAsync();
-            if (!years.Contains(DateTime.Now.Year))
+            if (sortOrder == "amount_asc" || sortOrder == "amount_desc")
             {
-                years.Add(DateTime.Now.Year);
-            }
-            ViewBag.Years = years.OrderByDescending(y => y).ToList();
-
-            ViewBag.Months = Enumerable.Range(1, 12)
-                .Select(m => new
+                var allItemsForAmountSort = await queryableItems.ToListAsync();
+                if (sortOrder == "amount_asc")
                 {
-                    Number = m,
-                    Name = CultureInfo.CurrentCulture?.DateTimeFormat?.GetMonthName(m) ?? m.ToString()
-                })
-                .ToList();
+                    items = allItemsForAmountSort.OrderBy(i => i.Amount).Skip((page - 1) * pageSize).Take(pageSize).ToList(); //
+                }
+                else // amount_desc
+                {
+                    items = allItemsForAmountSort.OrderByDescending(i => i.Amount).Skip((page - 1) * pageSize).Take(pageSize).ToList(); //
+                }
+            }
+            else
+            {
+                items = await queryableItems.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync(); //
+            }
 
-            return View(items);
+            ViewBag.CurrentPage = page; //
+            ViewBag.PageSize = pageSize; //
+            ViewBag.TotalItems = totalItems; //
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize); //
+            ViewBag.CategoryFilter = categoryFilter; //
+            ViewBag.YearFilter = yearFilter; //
+            ViewBag.MonthFilter = monthFilter; //
+
+            var years = await _context.Incomes.Where(i => i.UserId == userId).Select(i => i.Date.Year).Distinct().ToListAsync(); //
+            if (!years.Contains(DateTime.Now.Year)) //
+            {
+                years.Add(DateTime.Now.Year); //
+            }
+            ViewBag.Years = years.OrderByDescending(y => y).ToList(); //
+
+            ViewBag.Months = Enumerable.Range(1, 12).Select(m => new { Number = m, Name = CultureInfo.CurrentCulture?.DateTimeFormat?.GetMonthName(m) ?? m.ToString() }).ToList(); //
+
+            return View(items); //
         }
 
+        // ... (reszta metod kontrolera: Details, Create, Edit, Delete, IncomeExists) ...
+        // Reszta pliku IncomesController.cs bez zmian
         // get: przychody/details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id) //
         {
-            if (id == null) return NotFound();
+            if (id == null) return NotFound(); //
 
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId)) return Challenge();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
+            if (string.IsNullOrEmpty(userId)) return Challenge(); //
 
             var income = await _context.Incomes
-                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId); //
 
-            if (income == null) return NotFound();
-            return View(income);
+            if (income == null) return NotFound(); //
+            return View(income); //
         }
 
         // get: przychody/create
-        public IActionResult Create()
+        public IActionResult Create() //
         {
-            // inicjalizacja modelu z domyślnymi wartościami dla formularza
             var model = new Income
             {
-                Date = DateTime.Today // ustaw dzisiejszą datę jako domyślną
+                Date = DateTime.Today //
             };
-            return View(model);
+            ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory)); //
+            return View(model); //
         }
 
         // post: przychody/create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Category,Date,Amount,Notes")] Income income) // id jest generowane, userid ustawiane poniżej
+        public async Task<IActionResult> Create([Bind("Category,Date,Amount,Notes")] Income income) //
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
             if (string.IsNullOrEmpty(userId))
             {
-                // ten błąd jest mało prawdopodobny przy [authorize], ale lepiej go obsłużyć
-                ModelState.AddModelError(string.Empty, "użytkownik nie jest poprawnie zidentyfikowany. spróbuj zalogować się ponownie.");
-                return View(income); // zwróć widok z błędem, aby użytkownik wiedział co się stało
+                ModelState.AddModelError(string.Empty, "użytkownik nie jest poprawnie zidentyfikowany. spróbuj zalogować się ponownie."); //
+                ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory));
+                return View(income); //
             }
 
-            income.UserId = userId; // przypisz userid do nowego dochodu
+            income.UserId = userId; //
 
-            // modelstate.isvalid sprawdzi atrybuty [required] itp. w modelu income
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) //
             {
-                _context.Add(income);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index)); 
+                _context.Add(income); //
+                await _context.SaveChangesAsync(); //
+                return RedirectToAction(nameof(Index)); //
             }
-            // jeśli modelstate nie jest valid zwróć widok z modelem
-            return View(income);
+            ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory));
+            return View(income); //
         }
 
         // get: przychody/edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id) //
         {
-            if (id == null) return NotFound();
+            if (id == null) return NotFound(); //
 
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId)) return Challenge();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
+            if (string.IsNullOrEmpty(userId)) return Challenge(); //
 
-            var income = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+            var income = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId); //
 
-            if (income == null) return NotFound(); // dochód nie istnieje lub nie należy do użytkownika
-            return View(income);
+            if (income == null) return NotFound(); //
+            ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory)); //
+            return View(income); //
         }
 
         // post: przychody/edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Category,Date,Amount,Notes")] Income income)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Category,Date,Amount,Notes")] Income income) //
         {
-            if (id != income.Id) return NotFound(); // sprawdzenie czy id z routingu zgadza się z id w modelu
+            if (id != income.Id) return NotFound(); //
 
-            string? currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            string? currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
             if (string.IsNullOrEmpty(currentUserId))
             {
-                ModelState.AddModelError(string.Empty, "nie można zweryfikować użytkownika. spróbuj zalogować się ponownie.");
-                return View(income); // zwróć widok z błędem
+                ModelState.AddModelError(string.Empty, "nie można zweryfikować użytkownika. spróbuj zalogować się ponownie."); //
+                ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory));
+                return View(income); //
             }
 
-            // pobierz oryginalny dochód z bazy, aby upewnić się, że edytujemy własny wpis
-            // i aby zachować oryginalny userid (nie pozwalamy na jego zmianę przez formularz)
-            var incomeToUpdate = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == currentUserId);
+            var incomeToUpdate = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == currentUserId); //
 
             if (incomeToUpdate == null)
             {
-                return NotFound();
+                return NotFound(); //
             }
 
-            incomeToUpdate.Category = income.Category;
-            incomeToUpdate.Date = income.Date;
-            incomeToUpdate.Amount = income.Amount;
-            incomeToUpdate.Notes = income.Notes;
+            incomeToUpdate.Category = income.Category; //
+            incomeToUpdate.Date = income.Date; //
+            incomeToUpdate.Amount = income.Amount; //
+            incomeToUpdate.Notes = income.Notes; //
 
-
-            if (ModelState.IsValid) 
+            if (ModelState.IsValid) //
             {
                 try
                 {
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(); //
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!IncomeExists(incomeToUpdate.Id, currentUserId)) return NotFound(); 
-                    else throw;
+                    if (!IncomeExists(incomeToUpdate.Id, currentUserId)) return NotFound(); //
+                    else throw; //
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index)); //
             }
-            return View(incomeToUpdate);
+            ViewBag.Categories = Enum.GetValues(typeof(IncomeCategory));
+            return View(incomeToUpdate); //
         }
 
         // get: przychody/delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id) //
         {
-            if (id == null) return NotFound();
+            if (id == null) return NotFound(); //
 
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId)) return Challenge();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
+            if (string.IsNullOrEmpty(userId)) return Challenge(); //
 
             var income = await _context.Incomes
-                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+                .FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId); //
 
-            if (income == null) return NotFound();
-            return View(income);
+            if (income == null) return NotFound(); //
+            return View(income); //
         }
 
         // post: przychody/delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id) //
         {
-            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId)) return Challenge();
+            string? userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value; //
+            if (string.IsNullOrEmpty(userId)) return Challenge(); //
 
-            var income = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId);
+            var income = await _context.Incomes.FirstOrDefaultAsync(i => i.Id == id && i.UserId == userId); //
 
-            if (income != null) 
+            if (income != null) //
             {
-                _context.Incomes.Remove(income);
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "przychód został pomyślnie usunięty."; 
+                _context.Incomes.Remove(income); //
+                await _context.SaveChangesAsync(); //
+                TempData["SuccessMessage"] = "przychód został pomyślnie usunięty."; //
             }
             else
             {
-                TempData["ErrorMessage"] = "nie można usunąć przychodu. nie został znaleziony lub nie masz uprawnień."; 
+                TempData["ErrorMessage"] = "nie można usunąć przychodu. nie został znaleziony lub nie masz uprawnień."; //
             }
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index)); //
         }
 
-        private bool IncomeExists(int id, string userId)
+        private bool IncomeExists(int id, string userId) //
         {
-            return _context.Incomes.Any(i => i.Id == id && i.UserId == userId);
+            return _context.Incomes.Any(i => i.Id == id && i.UserId == userId); //
         }
     }
 }
