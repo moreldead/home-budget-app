@@ -1,6 +1,7 @@
 ﻿@* Plik: Views/Dashboard/Index.cshtml *@
 @using System.Text.Json
 @using System.Globalization
+@using home_budget_app.Models;
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 
@@ -77,49 +78,59 @@
 <div class="row mb-4">
     <div class="col-md-12">
         <div class="card p-3">
-            <h5>Sumy wydatków i dochodów za rok @ViewBag.SelectedYear</h5>
+            <h5>Sumy wydatków i dochodów za rok @selectedYear</h5> @* Using selectedYear from the C# block *@
             <table class="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Miesiąc</th>
-                        <th>Suma wydatków</th>
-                        <th>Suma dochodów</th>
+                        <th>
+                            Miesiąc
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_month_asc" })" title="Sortuj rosnąco po miesiącu">
+                                <i class="bi bi-arrow-up"></i>
+                            </a>
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_month_desc" })" title="Sortuj malejąco po miesiącu">
+                                <i class="bi bi-arrow-down"></i>
+                            </a>
+                        </th>
+                        <th>
+                            Suma wydatków
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_expenses_asc" })" title="Sortuj rosnąco po wydatkach">
+                                <i class="bi bi-arrow-up"></i>
+                            </a>
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_expenses_desc" })" title="Sortuj malejąco po wydatkach">
+                                <i class="bi bi-arrow-down"></i>
+                            </a>
+                        </th>
+                        <th>
+                            Suma dochodów
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_incomes_asc" })" title="Sortuj rosnąco po dochodach">
+                                <i class="bi bi-arrow-up"></i>
+                            </a>
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_incomes_desc" })" title="Sortuj malejąco po dochodach">
+                                <i class="bi bi-arrow-down"></i>
+                            </a>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
-                    @for (int currentMonthTable = 1; currentMonthTable <= 12; currentMonthTable++) // Zmieniono nazwę zmiennej
-                    {
-                        <tr>
-                            <td>@CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(currentMonthTable)</td>
-                            <td>
-                                @{
-                                    var monthlyExpenses = ViewBag.MonthlyExpensesSums as Dictionary<int, double>;
-                                    if (monthlyExpenses != null && monthlyExpenses.ContainsKey(currentMonthTable))
-                                    {
-                                        @monthlyExpenses[currentMonthTable].ToString("C")
-                                        ;
-                                    }
-                                    else
-                                    {
-                                        @: "0,00";
-                                    }
-                                }
-                            </td>
-                            <td>
-                                @{
-                                    var monthlyIncomes = ViewBag.MonthlyIncomesSums as Dictionary<int, double>;
-                                    if (monthlyIncomes != null && monthlyIncomes.ContainsKey(currentMonthTable))
-                                    {
-                                        @monthlyIncomes[currentMonthTable].ToString("C")
-                                        ;
-                                    }
-                                    else
-                                    {
-                                        @: "0,00";
-                                    }
-                                }
-                            </td>
-                        </tr>
+                    @{
+                        var monthlySummariesList = ViewBag.MonthlySummaries as List<MonthlySummaryViewModel>;
+                        if (monthlySummariesList != null && monthlySummariesList.Any())
+                        {
+                            foreach (var summary in monthlySummariesList)
+                            {
+                                <tr>
+                                    <td>@summary.MonthName</td>
+                                    <td>@summary.TotalExpenses.ToString("C")</td>
+                                    <td>@summary.TotalIncomes.ToString("C")</td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center">Brak danych do wyświetlenia dla tego roku.</td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

@@ -95,4 +95,13 @@ namespace home_budget_app.Models
         public string? Category { get; set; }
         public decimal Sum { get; set; }
     }
+
+    public class MonthlySummaryViewModel
+    {
+        public int MonthNumber { get; set; }
+        public string MonthName { get; set; }
+        public double TotalExpenses { get; set; } // Matches the 'double' type used in your controller sums
+        public double TotalIncomes { get; set; }  // Matches the 'double' type used in your controller sums
+    }
+
 }
