@@ -21,8 +21,8 @@ public class Program
         // uzywaj ApplicationUser
         builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = false; // Set to true in production if needed
-            options.SignIn.RequireConfirmedEmail = false;  // Set to true in production if needed
+            options.SignIn.RequireConfirmedAccount = false; // ustawic true jesli potrzerbne
+            options.SignIn.RequireConfirmedEmail = false;  // ustawic true jesli potrzerbne
         })
             .AddEntityFrameworkStores<ApplicationDbContext>();
 

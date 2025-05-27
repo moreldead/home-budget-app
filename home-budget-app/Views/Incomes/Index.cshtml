@@ -1,4 +1,4 @@
-﻿@* Plik: Views/Incomes/Index.cshtml *@
+﻿@* Views/Incomes/Index.cshtml *@
 @model IEnumerable<home_budget_app.Models.Income>
 @using home_budget_app.Models
 @using home_budget_app.Extensions
@@ -10,18 +10,18 @@
     int totalPages = ViewBag.TotalPages ?? 0;
     int selectedPageSize = ViewBag.PageSize ?? 10;
     // POPRAWKA TUTAJ: zmiana nazwy zmiennej
-    string currentSortOrder = ViewBag.SortOrder ?? "date_desc"; //
-    string categoryFilter = ViewBag.CategoryFilter ?? string.Empty; //
+    string currentSortOrder = ViewBag.SortOrder ?? "date_desc"; 
+    string categoryFilter = ViewBag.CategoryFilter ?? string.Empty; 
     int? currentYearFilter = ViewBag.YearFilter as int?; // filtry roku i miesiąca
-    int? currentMonthFilter = ViewBag.MonthFilter as int?; //
+    int? currentMonthFilter = ViewBag.MonthFilter as int?; 
 
     // logika dla zakresu stron paginacji
-    int startPage = Math.Max(1, currentPage - 2); //
-    int endPage = Math.Min(totalPages, currentPage + 2); //
+    int startPage = Math.Max(1, currentPage - 2); 
+    int endPage = Math.Min(totalPages, currentPage + 2); 
     if (endPage - startPage + 1 < 5 && totalPages >= 5) // próbuj wyświetlić 5 stron jeśli to możliwe
     {
-        if (startPage == 1) endPage = Math.Min(totalPages, startPage + 4); //
-        else if (endPage == totalPages) startPage = Math.Max(1, endPage - 4); //
+        if (startPage == 1) endPage = Math.Min(totalPages, startPage + 4); 
+        else if (endPage == totalPages) startPage = Math.Max(1, endPage - 4); 
     }
 }
 
@@ -34,8 +34,6 @@
 </p>
 
 <form id="filterForm" method="get" asp-action="Index" class="form-inline mb-4">
-    @* ukryte pole dla sortOrder nie jest już tak krytyczne, bo linki go ustawiają, ale może zostać *@
-    @* Używamy poprawionej nazwy zmiennej 'currentSortOrder' *@
     <input type="hidden" name="sortOrder" value="@currentSortOrder" />
 
     <div class="form-group mr-2 mb-2">
@@ -43,7 +41,7 @@
         <select id="yearFilter" name="yearFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
             <option value="">Wszystkie</option>
             @{
-                var years = ViewBag.Years as List<int> ?? new List<int>(); //
+                var years = ViewBag.Years as List<int> ?? new List<int>(); 
                 foreach (var y in years)
                 {
                     <option value="@y" selected="@(currentYearFilter == y)">@y</option>
@@ -57,22 +55,22 @@
         <select id="monthFilter" name="monthFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
             <option value="">Wszystkie</option>
             @{
-                var monthSource = ViewBag.Months as System.Collections.IEnumerable; //
+                var monthSource = ViewBag.Months as System.Collections.IEnumerable; 
             }
-            @if (monthSource != null) //
+            @if (monthSource != null) 
             {
-                foreach (dynamic m in monthSource) //
+                foreach (dynamic m in monthSource) 
                 {
-                    try //
+                    try 
                     {
-                        var num = (int)m.Number; //
-                        var name = (string)m.Name; //
-                        if (!string.IsNullOrEmpty(name)) //
+                        var num = (int)m.Number; 
+                        var name = (string)m.Name; 
+                        if (!string.IsNullOrEmpty(name)) 
                         {
                             <option value="@num" selected="@(currentMonthFilter == num)">@name</option>
                         }
                     }
-                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) //
+                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) 
                     {
                         <option value="">błąd danych miesiąca</option>
                         //
@@ -86,7 +84,7 @@
         <label for="categoryFilter" class="mr-1">Kategoria:</label>
         <select id="categoryFilter" name="categoryFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
             <option value="" selected="@(string.IsNullOrEmpty(categoryFilter))">Wszystkie</option>
-            @foreach (IncomeCategory cat in Enum.GetValues(typeof(IncomeCategory))) //
+            @foreach (IncomeCategory cat in Enum.GetValues(typeof(IncomeCategory))) 
             {
                 <option value="@cat" selected="@(categoryFilter == cat.ToString())">@cat.GetDisplayName()</option>
             }
@@ -96,7 +94,7 @@
     <div class="form-group mr-2 mb-2">
         <label for="pageSize" class="mr-1">Na stronie:</label>
         <select id="pageSize" name="pageSize" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
-            @foreach (var size in pageSizes) //
+            @foreach (var size in pageSizes) 
             {
                 <option value="@size" selected="@(selectedPageSize == size)">@size</option>
             }
@@ -170,19 +168,18 @@
             else
             {
                 <tr>
-                    <td colspan="6" class="text-center">brak przychodów do wyświetlenia.</td> @* Zmieniono colspan na 6 z powodu dodania kolumny ID *@
+                    <td colspan="6" class="text-center">brak przychodów do wyświetlenia.</td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
-@* Blok paginacji - używamy poprawionej nazwy zmiennej 'currentSortOrder' *@
-@if (totalPages > 0) //
+@if (totalPages > 0) 
 {
     <nav aria-label="nawigacja po stronach przychodów">
         <ul class="pagination justify-content-center">
-            @if (currentPage > 1) //
+            @if (currentPage > 1) 
             {
                 <li class="page-item">
                     <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = currentSortOrder, categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" aria-label="pierwsza strona">
@@ -201,32 +198,32 @@
                 <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
             }
 
-            @if (startPage > 1) //
+            @if (startPage > 1) 
             {
                 <li class="page-item"><a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = currentSortOrder, categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })">1</a></li>
-                @if (startPage > 2) //
+                @if (startPage > 2) 
                 {
                     <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
                 }
             }
 
-            @for (int i = startPage; i <= endPage; i++) //
+            @for (int i = startPage; i <= endPage; i++) 
             {
                 <li class="page-item @(i == currentPage ? "active" : "")">
                     <a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = selectedPageSize, sortOrder = currentSortOrder, categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })">@i</a>
                 </li>
             }
 
-            @if (endPage < totalPages) //
+            @if (endPage < totalPages) 
             {
-                @if (endPage < totalPages - 1) //
+                @if (endPage < totalPages - 1) 
                 {
                     <li class="page-item disabled"><span class="page-link">&hellip;</span></li>
                 }
                 <li class="page-item"><a class="page-link" href="@Url.Action("Index", new { page = totalPages, pageSize = selectedPageSize, sortOrder = currentSortOrder, categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })">@totalPages</a></li>
             }
 
-            @if (currentPage < totalPages) //
+            @if (currentPage < totalPages) 
             {
                 <li class="page-item">
                     <a class="page-link" href="@Url.Action("Index", new { page = currentPage + 1, pageSize = selectedPageSize, sortOrder = currentSortOrder, categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" aria-label="następna strona">
