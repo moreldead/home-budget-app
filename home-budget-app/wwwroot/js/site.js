@@ -1,4 +1,14 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿//Sterowanie sidebarem
 
-// Write your JavaScript code.
+document.getElementById('sidebarToggle').addEventListener('click', function () {
+    document.getElementById('sidebar').classList.toggle('collapsed');
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const currentPath = window.location.pathname.toLowerCase();
+    if (currentPath === "/home/docs") {
+        const submenu = document.getElementById("submenu");
+        const bsCollapse = new bootstrap.Collapse(submenu, { toggle: false });
+        bsCollapse.show(); // rozwija z kontrolą JS
+    }
+});

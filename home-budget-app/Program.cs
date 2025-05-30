@@ -2,6 +2,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using home_budget_app.Data;
 using home_budget_app.Models;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.Extensions.Options;
 
 namespace home_budget_app;
 
@@ -11,24 +14,44 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlite(connectionString));
 
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        // uzywaj ApplicationUser
         builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
         {
-            options.SignIn.RequireConfirmedAccount = false; // ustawic true jesli potrzerbne
-            options.SignIn.RequireConfirmedEmail = false;  // ustawic true jesli potrzerbne
+            options.SignIn.RequireConfirmedAccount = false;
+            options.SignIn.RequireConfirmedEmail = false;
         })
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 
         builder.Services.AddControllersWithViews();
+        builder.Services.AddRazorPages();
+
+        // Konfiguracja obsługi kultury (pl-PL)
+        var supportedCultures = new[] { new CultureInfo("pl-PL") };
+        builder.Services.Configure<RequestLocalizationOptions>(options =>
+        {
+            var culture = new CultureInfo("pl-PL");
+            options.DefaultRequestCulture = new RequestCulture(culture);
+            options.SupportedCultures = new[] { culture };
+            options.SupportedUICultures = new[] { culture };
+            options.RequestCultureProviders.Clear(); // <-- usuwa wykrywanie kultury z nagłówków, cookies itd.
+        });
+
+
+        CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("pl-PL");
+        CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("pl-PL");
 
         var app = builder.Build();
+
+        // Middleware lokalizacji (MUSI być przed UseRouting i innymi)
+        var locOptions = app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+        app.UseRequestLocalization(locOptions);
 
         app.Use(async (context, next) =>
         {
@@ -36,7 +59,6 @@ public class Program
             await next();
         });
 
-        // konfiguracja pipelinu http request
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
@@ -52,6 +74,7 @@ public class Program
 
         app.UseRouting();
 
+        app.UseAuthentication(); // brakowało tego w Twoim kodzie, jeśli używasz Identity
         app.UseAuthorization();
 
         app.MapControllerRoute(
@@ -60,14 +83,12 @@ public class Program
 
         app.MapRazorPages();
 
+        // Seeder danych
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
             var context = services.GetRequiredService<ApplicationDbContext>();
-            
             var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-
-            
             DbSeeder.Seed(context, userManager);
         }
 

@@ -24,160 +24,232 @@
     }
 }
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
 
 <h1 class="my-4">Wydatki</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary mb-3">Dodaj nowy wydatek</a>
-</p>
-
-<form id="filterForm" method="get" asp-action="Index" class="form-inline mb-4">
-    <input type="hidden" name="sortOrder" value="@currentSortOrder" />
-
-    <div class="form-group mr-2 mb-2">
-        <label for="yearFilter" class="mr-1">Rok:</label> 
-        <select id="yearFilter" name="yearFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
-            <option value="">Wszystkie</option>
-            @{
-                var years = ViewBag.Years as List<int> ?? new List<int>(); 
-                foreach (var y in years)
-                {
-                    <option value="@y" selected="@(currentYearFilter == y)">@y</option>
-                }
-            }
-        </select>
+<!-- Rząd: Dodaj nowy wydatek + Filtry -->
+<div class="row mb-4">
+    <!-- Kolumna: Dodaj nowy wydatek -->
+    <div class="col-md-3 mb-3 mb-md-0">
+        <div class="card h-100">
+            <div class="card-header">
+                Nowy wydatek
+            </div>
+            <div class="card-body d-flex align-items-center justify-content-center">
+                <a asp-action="Create" class="btn btn-success w-100">
+                    <i class="bi bi-plus-circle me-1"></i> Dodaj nowy wydatek
+                </a>
+            </div>
+        </div>
     </div>
-    <div class="form-group mr-2 mb-2">
-   
-        <label for="monthFilter" class="mr-1">Miesiąc:</label> 
-        <select id="monthFilter" name="monthFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
-            <option value="">Wszystkie</option>
-            @{
-                var monthSource = ViewBag.Months as System.Collections.IEnumerable; 
-            }
-            @if (monthSource != null) 
-            {
-                foreach (dynamic m in monthSource) 
-                {
-                    try 
-                    {
-                        var num = (int)m.Number; 
-                        var name = (string)m.Name; 
-                        if (!string.IsNullOrEmpty(name)) 
-                        {
-                            <option value="@num" selected="@(currentMonthFilter == num)">@name</option>
-                        }
-                    }
-                    catch (Microsoft.CSharp.RuntimeBinder.RuntimeBinderException) //
-                    {
-                        <option value="">błąd danych miesiąca</option>
-                        
-                    }
-                }
-            }
-        </select>
-    </div>
-    <div class="form-group mr-2 mb-2">
 
-        <label for="categoryFilter" class="mr-1">Kategoria:</label>
-        <select id="categoryFilter" name="categoryFilter" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
-            <option value="" selected="@(string.IsNullOrEmpty(categoryFilter))">Wszystkie</option> 
-            @foreach (ExpenseCategory cat in Enum.GetValues(typeof(ExpenseCategory))) 
-            {
-                <option value="@cat" selected="@(categoryFilter == cat.ToString())">@cat.GetDisplayName()</option>
-            }
-        </select>
-    </div>
-    <div class="form-group mr-2 mb-2">
-        <label for="pageSize" class="mr-1">Na stronie:</label> 
-        <select id="pageSize" name="pageSize" class="form-control form-control-sm" onchange="document.getElementById('filterForm').submit();">
-            @{
-                foreach (var size in pageSizes) 
-                {
-                    <option value="@size" selected="@(selectedPageSize == size)">@size</option> 
-                }
-            }
-        </select>
-    </div>
-</form>
+    <!-- Kolumna: Filtry -->
+    <div class="col-md-9">
+        <div class="card h-100">
+            <div class="card-header">
+                Filtry
+            </div>
+            <div class="card-body">
+                <form id="filterForm" method="get" asp-action="Index" class="row g-3 align-items-end">
+                    <input type="hidden" name="sortOrder" value="@currentSortOrder" />
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">
-                    ID
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "id_asc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj rosnąco po id">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "id_desc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj malejąco po id">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Kategoria
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "category_asc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj rosnąco po kategorii">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "category_desc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj malejąco po kategorii">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Data
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "date_asc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj od najstarszych">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "date_desc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj od najnowszych">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Kwota
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "amount_asc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj rosnąco po kwocie">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", new { page = 1, pageSize = selectedPageSize, sortOrder = "amount_desc", categoryFilter = categoryFilter, yearFilter = currentYearFilter, monthFilter = currentMonthFilter })" title="sortuj malejąco po kwocie">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">Komentarz</th>
-                <th scope="col">Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any()) 
-            {
-                @foreach (var item in Model) 
-                {
-                    <tr>
-                        <td><a asp-action="Details" asp-route-id="@item.Id">@item.Id</a></td>
-                        <td>@item.Category.GetDisplayName()</td>
-                        <td>@item.Date.ToString("yyyy-MM-dd")</td>
-                        <td>@item.Amount.ToString("C")</td>
-                        <td>@item.Notes</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-warning mr-1" title="edytuj">
-                                <i class="bi bi-pencil"></i>
-                            </a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" title="usuń">
-                                <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-center">brak wydatków do wyświetlenia.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    <div class="col-md-4">
+                        <label for="yearFilter" class="form-label">Rok:</label> 
+                        <select id="yearFilter" name="yearFilter" class="form-select form-select-sm" onchange="document.getElementById('filterForm').submit();">
+                            <option value="">Wszystkie</option>
+                            @{
+                                var years = ViewBag.Years as List<int> ?? new List<int>(); 
+                                foreach (var y in years)
+                                {
+                                    <option value="@y" selected="@(currentYearFilter == y)">@y</option>
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="monthFilter" class="form-label">Miesiąc:</label> 
+                        <select id="monthFilter" name="monthFilter" class="form-select form-select-sm" onchange="document.getElementById('filterForm').submit();">
+                            <option value="">Wszystkie</option>
+                            @{
+                                var monthSource = ViewBag.Months as System.Collections.IEnumerable;
+                            }
+                            @if (monthSource != null) 
+                            {
+                                foreach (dynamic m in monthSource) 
+                                {
+                                    try 
+                                    {
+                                        var num = (int)m.Number; 
+                                        var name = (string)m.Name; 
+                                        if (!string.IsNullOrEmpty(name)) 
+                                        {
+                                            <option value="@num" selected="@(currentMonthFilter == num)">@name</option>
+                                        }
+                                    }
+                                    catch
+                                    {
+                                        <option value="">(błąd danych miesiąca)</option>
+                                    }
+                                }
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="categoryFilter" class="form-label">Kategoria:</label>
+                        <select id="categoryFilter" name="categoryFilter" class="form-select form-select-sm" onchange="document.getElementById('filterForm').submit();">
+                            <option value="" selected="@(string.IsNullOrEmpty(categoryFilter))">Wszystkie</option> 
+                            @foreach (ExpenseCategory cat in Enum.GetValues(typeof(ExpenseCategory))) 
+                            {
+                                <option value="@cat" selected="@(categoryFilter == cat.ToString())">@cat.GetDisplayName()</option>
+                            }
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!-- Rząd 3: Tabela wydatków i dochodów -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">Historia operacji</div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped table-hover">
+                  @{
+    Func<string, string> GetNextSortOrder = column =>
+        currentSortOrder == column + "_asc" ? column + "_desc" : column + "_asc";
+
+    Func<string, string> GetSortIcon = column =>
+        currentSortOrder == column + "_asc" ? "bi-sort-up"
+        : currentSortOrder == column + "_desc" ? "bi-sort-down"
+        : "bi-filter";
+}
+<thead class="thead-light">
+    <tr>
+        <th scope="col">
+            ID
+            <a href="@Url.Action("Index", new {
+                page = 1,
+                pageSize = selectedPageSize,
+                sortOrder = GetNextSortOrder("id"),
+                categoryFilter = categoryFilter,
+                yearFilter = currentYearFilter,
+                monthFilter = currentMonthFilter
+            })">
+                <i class="bi @GetSortIcon("id") ms-1"></i>
+            </a>
+        </th>
+        <th scope="col">
+            Kategoria
+            <a href="@Url.Action("Index", new {
+                page = 1,
+                pageSize = selectedPageSize,
+                sortOrder = GetNextSortOrder("category"),
+                categoryFilter = categoryFilter,
+                yearFilter = currentYearFilter,
+                monthFilter = currentMonthFilter
+            })">
+                <i class="bi @GetSortIcon("category") ms-1"></i>
+            </a>
+        </th>
+        <th scope="col">
+            Data
+            <a href="@Url.Action("Index", new {
+                page = 1,
+                pageSize = selectedPageSize,
+                sortOrder = GetNextSortOrder("date"),
+                categoryFilter = categoryFilter,
+                yearFilter = currentYearFilter,
+                monthFilter = currentMonthFilter
+            })">
+                <i class="bi @GetSortIcon("date") ms-1"></i>
+            </a>
+        </th>
+        <th scope="col">
+            Kwota
+            <a href="@Url.Action("Index", new {
+                page = 1,
+                pageSize = selectedPageSize,
+                sortOrder = GetNextSortOrder("amount"),
+                categoryFilter = categoryFilter,
+                yearFilter = currentYearFilter,
+                monthFilter = currentMonthFilter
+            })">
+                <i class="bi @GetSortIcon("amount") ms-1"></i>
+            </a>
+        </th>
+        <th scope="col">Komentarz</th>
+        <th scope="col">Akcje</th>
+    </tr>
+</thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any()) 
+                        {
+                            @foreach (var item in Model) 
+                            {
+                                <tr>
+                                    <td><a asp-action="Details" asp-route-id="@item.Id">@item.Id</a></td>
+                                    <td>@item.Category.GetDisplayName()</td>
+                                    <td>@item.Date.ToString("yyyy-MM-dd")</td>
+                                    <td>@item.Amount.ToString("C")</td>
+                                    <td>@item.Notes</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-secondary mr-1" title="edytuj">
+                                            <i class="bi bi-pencil-fill"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger" title="usuń">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center">brak wydatków do wyświetlenia.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="mb-2 mb-md-0">
+                    <!-- Osobny formularz: liczba wpisów na stronie -->
+                    <form id="pageSizeForm" method="get" asp-action="Index" class="row g-2 align-items-center">
+                        <input type="hidden" name="yearFilter" value="@currentYearFilter" />
+                        <input type="hidden" name="monthFilter" value="@currentMonthFilter" />
+                        <input type="hidden" name="categoryFilter" value="@categoryFilter" />
+                        <input type="hidden" name="sortOrder" value="@currentSortOrder" />
+                        <input type="hidden" name="page" value="1" />
+
+                        <div class="col-auto">
+                            <label for="pageSize" class="col-form-label">Na stronie:</label>
+                        </div>
+                        <div class="col-auto">
+                            <select id="pageSize" name="pageSize" class="form-select form-select-sm" onchange="document.getElementById('pageSizeForm').submit();">
+                                @{
+                                    foreach (var size in pageSizes)
+                                    {
+                                        <option value="@size" selected="@(selectedPageSize == size)">@size</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <span>wpisów</span>
+                        </div>
+                    </form>
+                </div>
+
+
+                
 @if (totalPages > 0) 
 {
     <nav aria-label="nawigacja po stronach wydatków">
@@ -247,3 +319,7 @@
         </ul>
     </nav>
 }
+            </div>
+        </div>
+    </div>
+</div>

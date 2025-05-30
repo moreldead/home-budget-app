@@ -8,22 +8,42 @@
 
 <h4>Czy na pewno chcesz usunąć?</h4>
 
-<dl class="row">
-    <dt class="col-sm-2">Kategoria</dt>
-    <dd class="col-sm-10">@Model.Category</dd>
+<!-- Szczegóły konkretnego wpisu z potwierdzeniem usunięcia -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card" id="entryDetailsCard">
+            <div class="card-header">
+                Czy na pewno chcesz usunąć ten wpis?
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Kategoria</dt>
+                    <dd class="col-sm-9">@Model.Category</dd>
 
-    <dt class="col-sm-2">Data</dt>
-    <dd class="col-sm-10">@Model.Date.ToShortDateString()</dd>
+                    <dt class="col-sm-3">Data</dt>
+                    <dd class="col-sm-9">@Model.Date.ToShortDateString()</dd>
 
-    <dt class="col-sm-2">Kwota</dt>
-    <dd class="col-sm-10">@Model.Amount.ToString("C")</dd>
+                    <dt class="col-sm-3">Kwota</dt>
+                    <dd class="col-sm-9">@Model.Amount.ToString("C")</dd>
 
-    <dt class="col-sm-2">Komentarz</dt>
-    <dd class="col-sm-10">@Model.Notes</dd>
-</dl>
-
-<form asp-action="Delete">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Usuń</button>
-    <a asp-action="Index" class="btn btn-secondary">Anuluj</a>
-</form>
+                    <dt class="col-sm-3">Komentarz</dt>
+                    <dd class="col-sm-9">@Model.Notes</dd>
+                </dl>
+            </div>
+            <div class="card-footer d-flex justify-content-end gap-2">
+                <form asp-action="Delete" method="post" class="mb-0">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash-fill me-1"></i> Usuń
+                    </button>
+                    <a asp-action="Edit" class="btn btn-warning">
+                        <i class="bi bi-pencil-fill me-1"></i> Edytuj
+                    </a>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-lg me-1"></i> Anuluj
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

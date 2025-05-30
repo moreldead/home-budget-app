@@ -1,0 +1,62 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Zaloguj się";
+}
+
+<!-- Panel logowania -->
+<div class="row mt-5 justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header text-center p-3">
+                <h1 class="mb-0 fs-5">Zaloguj się do aplikacji</h1>
+            </div>
+            <form id="account" method="post">
+            <div class="card-body p-5">
+                
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+                        <label asp-for="Input.Email" class="form-label">E-mail</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+                        <label asp-for="Input.Password" class="form-label">Hasło</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="checkbox mb-3">
+                        <label asp-for="Input.RememberMe" class="form-label">
+                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                        </label>
+                    </div>
+                    <div class="mb-2">
+                        <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary"><i class="bi bi-box-arrow-in-right"></i> Zaloguj się</button>
+                    </div>
+                    <div class="mb-2">
+                        <p>
+                            <a id="forgot-password" asp-page="./ForgotPassword">Zapomniałeś hasła?</a>
+                        </p>
+                        <p>
+                            
+                        </p>
+                        <p>
+                            <a id="resend-confirmation" asp-page="./ResendEmailConfirmation">Wyślij e-mail z aktywacją</a>
+                        </p>
+                    </div>
+                
+            </div>
+            <div class="card-footer text-center text-muted small p-3">
+                Nie masz konta? <a href="/register" class="text-decoration-none"><a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Zarejestruj się</a></a>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

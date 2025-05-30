@@ -2,8 +2,7 @@
 @using System.Text.Json
 @using System.Globalization
 @using home_budget_app.Models;
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
 
 
 @{
@@ -12,417 +11,364 @@
     var monthsForSelect = ViewBag.Months as IEnumerable<dynamic>;
     var selectedMonth = ViewBag.SelectedMonth ?? DateTime.Now.Month; // domyślna wartość
     var selectedYear = ViewBag.SelectedYear ?? DateTime.Now.Year; // domyślna wartość
-    var monthName = monthsForSelect?.FirstOrDefault(m => (int)m.Number == (int)selectedMonth)?.Name ?? CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth); 
+    var monthName = monthsForSelect?.FirstOrDefault(m => (int)m.Number == (int)selectedMonth)?.Name ?? CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(selectedMonth);
 
     // currentSortOrder z viewbag ustawiony przez kontroler
     string currentSortOrder = ViewBag.SortOrder ?? "date_desc";
 }
-
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
-
-<h1 class="mb-4">Dashboard</h1>
-
-
-<form method="get" asp-action="Index" class="row g-3 align-items-end mb-4">
-    <input type="hidden" name="sortOrder" value="@currentSortOrder" /> @* przekazujemy sortOrder przy zmianie filtrów roku/miesiąca *@
-    <div class="col-md-3">
-        <label class="form-label">Rok</label>
-        <select name="year" class="form-select">
-            @foreach (var y in ViewBag.Years) //
-            {
-                <option value="@y" selected="@(y == selectedYear)">@y</option> @* używamy selectedYear z góry *@
-            }
-        </select>
-    </div>
-    <div class="col-md-3">
-        <label class="form-label">Miesiąc</label>
-        <select name="month" class="form-select">
-            @foreach (var m in monthsForSelect) // używamy monthsForSelect
-            {
-                <option value="@m.Number" selected="@(m.Number == selectedMonth)">@m.Name</option> @* używamy selectedMonth z góry *@
-            }
-        </select>
-    </div>
-    <div class="col-md-2">
-        <button type="submit" class="btn btn-primary w-100">Pokaż</button>
-    </div>
-</form>
-
-
+<h1 class="my-4">Dashboard</h1>
+<!-- Formularz filtrów -->
 <div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Suma wydatków</h5>
-            <p class="fs-4 text-danger">@ViewBag.ExpensesSum.ToString("C")</p>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Suma dochodów</h5>
-            <p class="fs-4 text-success">@ViewBag.IncomesSum.ToString("C")</p>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Suma wydatków za cały rok @ViewBag.SelectedYear</h5>
-            <p class="fs-4 text-warning">
-                @ViewBag.TotalExpensesYear.ToString("C")
-            </p>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card p-3">
-            <h5>Sumy wydatków i dochodów za rok @selectedYear</h5> 
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>
-                            Miesiąc
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_month_asc" })" title="Sortuj rosnąco po miesiącu">
-                                <i class="bi bi-arrow-up"></i>
-                            </a>
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_month_desc" })" title="Sortuj malejąco po miesiącu">
-                                <i class="bi bi-arrow-down"></i>
-                            </a>
-                        </th>
-                        <th>
-                            Suma wydatków
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_expenses_asc" })" title="Sortuj rosnąco po wydatkach">
-                                <i class="bi bi-arrow-up"></i>
-                            </a>
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_expenses_desc" })" title="Sortuj malejąco po wydatkach">
-                                <i class="bi bi-arrow-down"></i>
-                            </a>
-                        </th>
-                        <th>
-                            Suma dochodów
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_incomes_asc" })" title="Sortuj rosnąco po dochodach">
-                                <i class="bi bi-arrow-up"></i>
-                            </a>
-                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = currentSortOrder, summarySortOrderParam = "summary_incomes_desc" })" title="Sortuj malejąco po dochodach">
-                                <i class="bi bi-arrow-down"></i>
-                            </a>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @{
-                        var monthlySummariesList = ViewBag.MonthlySummaries as List<MonthlySummaryViewModel>;
-                        if (monthlySummariesList != null && monthlySummariesList.Any())
-                        {
-                            foreach (var summary in monthlySummariesList)
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                Filtry
+            </div>
+            <div class="card-body">
+                <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                    <input type="hidden" name="sortOrder" value="@currentSortOrder"/>
+                    <div class="col-md-4">
+                        <label for="select1" class="form-label">Rok</label>
+                        <select id="select1" name="year" class="form-select">
+                            @foreach (var y in ViewBag.Years) //
                             {
-                                <tr>
-                                    <td>@summary.MonthName</td>
-                                    <td>@summary.TotalExpenses.ToString("C")</td>
-                                    <td>@summary.TotalIncomes.ToString("C")</td>
-                                </tr>
+                                <option value="@y"
+                                        selected="@(y == selectedYear)">@y</option> @* używamy selectedYear z góry *@
                             }
-                        }
-                        else
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="select2" class="form-label">Miesiąc</label>
+                        <select id="select2" name="month" class="form-select">
+                            @foreach (var m in monthsForSelect) // używamy monthsForSelect
+                            {
+                                <option value="@m.Number"
+                                        selected="@(m.Number == selectedMonth)">@m.Name</option> @* używamy selectedMonth z góry *@
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Zastosuj</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sumy + wykres -->
+<div class="row mb-4">
+    <!-- Lewa kolumna: 3 karty -->
+    <div class="col-md-4 d-flex flex-column h-100">
+        <div class="card flex-fill mb-3">
+            <div class="card-header">Suma wydatków</div>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.ExpensesSum.ToString("C")</h5>
+                <p class="card-text">Łączne wydatki w wybranym okresie</p>
+            </div>
+        </div>
+        <div class="card flex-fill mb-3">
+            <div class="card-header">Suma dochodów</div>
+            <div class="card-body">
+                <h5 class="card-title">3 400,00 zł</h5>
+                <p class="card-text">@ViewBag.IncomesSum.ToString("C")</p>
+            </div>
+        </div>
+        <div class="card flex-fill">
+            <div class="card-header">Wydatki w roku @ViewBag.SelectedYear</div>
+            <div class="card-body">
+                <h5 class="card-title">@ViewBag.TotalExpensesYear.ToString("C")</h5>
+                <p class="card-text">Tyle wydałeś w tym roku</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Prawa kolumna: Wykres -->
+    <div class="col-md-8">
+        <div class="card h-100">
+            <div class="card-header">Wydatki wg kategorii</div>
+            <div class="card-body d-flex align-items-center">
+                <canvas id="expensesByCategoryChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dochody i wydatki w układzie góra/dół -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">Dochody i wydatki w ujęciu miesięcznym w roku @ViewBag.SelectedYear</div>
+            <div class="card-body">
+                <canvas id="incomesVsExpensesChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabela wydatków i dochodów -->
+<div class="row ">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">Historia operacji za @monthName (@selectedYear)</div>
+            <div class="card-body table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                    <tr>
+                        <th scope="col">
+                            Typ
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = ViewBag.SortOrder == "type_asc" ? "type_desc" : "type_asc" })"
+                               title="Sortuj po typie">
+                                @if (ViewBag.SortOrder == "id_asc")
+                                {
+                                    <i class="bi bi-sort-up"></i>
+                                }
+                                else if (ViewBag.SortOrder == "id_desc")
+                                {
+                                    <i class="bi bi-sort-down"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-filter"></i>
+                                }
+                            </a>
+                        </th>
+
+                        <th scope="col">Typ
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = ViewBag.SortOrder == "type_asc" ? "type_desc" : "type_asc" })"
+                               title="Sortuj po typie">
+                                @if (ViewBag.SortOrder == "type_asc")
+                                {
+                                    <i class="bi bi-sort-up"></i>
+                                }
+                                else if (ViewBag.SortOrder == "type_desc")
+                                {
+                                    <i class="bi bi-sort-down"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-filter"></i>
+                                }
+                            </a>
+                        </th>
+                        <th scope="col">Kategoria <a href="@Url.Action("Index", "Dashboard", new
+                                                           {
+                                                               year = selectedYear,
+                                                               month = selectedMonth,
+                                                               sortOrder = ViewBag.SortOrder == "category_asc" ? "category_desc" : "category_asc"
+                                                           })" title="Sortuj po kategorii">
+                            @if (ViewBag.SortOrder == "category_asc")
+                            {
+                                <i class="bi bi-sort-up"></i>
+                            }
+                            else if (ViewBag.SortOrder == "category_desc")
+                            {
+                                <i class="bi bi-sort-down"></i>
+                            }
+                            else
+                            {
+                                <i class="bi bi-filter"></i>
+                            }
+                        </a></th>
+                        <th scope="col">Data
+                            <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = ViewBag.SortOrder == "date_asc" ? "date_desc" : "date_asc" })"
+                               title="Sortuj po dacie">
+                                @if (ViewBag.SortOrder == "date_asc")
+                                {
+                                    <i class="bi bi-sort-up"></i>
+                                }
+                                else if (ViewBag.SortOrder == "date_desc")
+                                {
+                                    <i class="bi bi-sort-down"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-filter"></i>
+                                }
+                            </a>
+                      
+                        </th>
+                        <th scope="col">Kwota <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = ViewBag.SortOrder == "amount_asc" ? "amount_desc" : "amount_asc" })"
+                                                 title="Sortuj po kwocie">  @if (ViewBag.SortOrder == "amount_asc")
+                                                                            {
+                                                                                <i class="bi bi-sort-up"></i>
+                                                                            }
+                                                                            else if (ViewBag.SortOrder == "amount_desc")
+                                                                            {
+                                                                                <i class="bi bi-sort-down"></i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i class="bi bi-filter"></i>
+                                                                            }</a></th>
+                        <th scope="col">Notatka</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @{
+                        var recentEntries = ViewBag.RecentEntries as List<home_budget_app.Controllers.TransactionViewModel>;
+                    }
+                    @if (recentEntries != null && recentEntries.Any())
+                    {
+                        foreach (var entry in recentEntries)
                         {
                             <tr>
-                                <td colspan="3" class="text-center">Brak danych do wyświetlenia dla tego roku.</td>
+                                <td>
+                                    <a asp-action="Details"
+                                       asp-controller="@(entry.Type == "Wydatek" ? "Expenses" : "Incomes")"
+                                       asp-route-id="@entry.Id">
+                                        @entry.Id
+                                    </a>
+                                </td>
+
+                                <td>@entry.Type</td>
+                                <td>@entry.Category</td>
+                                <td>@entry.Date.ToString("yyyy-MM-dd")</td>
+                                <td>
+                                    @entry.Amount.ToString("C")
+                                </td>
+                                <td>@entry.Notes</td>
                             </tr>
                         }
                     }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card p-3">
-            <h5>Sumy wydatków i dochodów za rok @ViewBag.SelectedYear</h5>
-            <canvas id="incomeExpenseChart"></canvas>
-        </div>
-    </div>
-</div>
-
-<h5>Wydatki i dochody w miesiącu: @monthName (@selectedYear)</h5>
-<div class="table-responsive">
-    <table class="table table-striped table-hover mb-4">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col">
-                    ID
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "id_asc" })" title="sortuj rosnąco po id">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "id_desc" })" title="sortuj malejąco po id">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Typ
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "type_asc" })" title="sortuj rosnąco po typie">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "type_desc" })" title="sortuj malejąco po typie">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Data
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "date_asc" })" title="sortuj od najstarszych">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "date_desc" })" title="sortuj od najnowszych">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Kategoria
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "category_asc" })" title="sortuj rosnąco po kategorii">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "category_desc" })" title="sortuj malejąco po kategorii">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th scope="col">
-                    Kwota
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "amount_asc" })" title="sortuj rosnąco po kwocie">
-                        <i class="bi bi-arrow-up"></i>
-                    </a>
-                    <a href="@Url.Action("Index", "Dashboard", new { year = selectedYear, month = selectedMonth, sortOrder = "amount_desc" })" title="sortuj malejąco po kwocie">
-                        <i class="bi bi-arrow-down"></i>
-                    </a>
-                </th>
-                <th>Notatka</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (ViewBag.RecentEntries != null)
-            {
-                var recentEntries = ViewBag.RecentEntries as List<home_budget_app.Controllers.TransactionViewModel>;
-                if (recentEntries != null && recentEntries.Any())
-                {
-                    @foreach (var entry in recentEntries)
+                    else
                     {
                         <tr>
-                            <td>@entry.Id</td>
-                            <td>@entry.Type</td>
-                            <td>@entry.Date.ToString("yyyy-MM-dd")</td>
-                            <td>@entry.Category</td>
-                            <td class="@(entry.Type == "Wydatek" ? "text-danger" : "text-success")">
-                                @{
-                                    decimal displayAmount = entry.Amount;
-                                    if (entry.Type == "Wydatek")
-                                    {
-                                        // Jeśli wydatki mają być wyświetlane jako ujemne, a są dodatnie w bazie/viewmodelu
-                                        // displayAmount = -entry.Amount;
-                                        // Lub jeśli już są ujemne, to nie trzeba nic robić lub entry.Amount.ToString("C")
-                                    }
-                                }
-                                @displayAmount.ToString("C")
-                            </td>
-                            <td>@entry.Notes</td>
+                            <td colspan="6" class="text-center">Brak danych do wyświetlenia.</td>
                         </tr>
                     }
-                }
-                else
-                {
-                    <tr>
-                        <td colspan="6" class="text-center">brak wpisów dla wybranego miesiąca.</td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6" class="text-center">brak danych wpisów.</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
 </div>
 
-<script>
-    // Skrypt dla wykresu incomeExpenseChart (miesięczne sumy)
-    var monthlyExpensesSumsForChart = @Html.Raw(Json.Serialize(ViewBag.MonthlyExpensesSumsChart ?? new Dictionary<int, double>())); //
-    var monthlyIncomesSumsForChart = @Html.Raw(Json.Serialize(ViewBag.MonthlyIncomesSums ?? new Dictionary<int, double>())); //
-    var monthLabelsForChart = @Html.Raw(Json.Serialize(ViewBag.MonthNames ?? new string[0])); //
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('expensesByCategoryChart').getContext('2d');
 
-    var expensesDataForChart = [];
-    var incomesDataForChart = [];
+            const labels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                               ((Dictionary<string, double>)ViewBag.ExpensesSumsByCategoryForMonth).Keys));
+            const data = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                             ((Dictionary<string, double>)ViewBag.ExpensesSumsByCategoryForMonth).Values));
 
-    for (var m = 1; m <= 12; m++) {
-        expensesDataForChart.push(monthlyExpensesSumsForChart[m.toString()] || 0); // Klucze w słowniku to stringi po serializacji
-        incomesDataForChart.push(monthlyIncomesSumsForChart[m.toString()] || 0);
-    }
-    if (document.getElementById('incomeExpenseChart')) { // Sprawdzenie czy element istnieje
-        var ctxLineBar = document.getElementById('incomeExpenseChart').getContext('2d');
-        var incomeExpenseChart = new Chart(ctxLineBar, {
-            type: 'bar', //
-            data: {
-                labels: monthLabelsForChart, //
-                datasets: [{
-                    label: 'dochody', //
-                    data: incomesDataForChart, //
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)', //
-                    borderColor: 'rgba(54, 162, 235, 1)', //
-                    borderWidth: 1, //
-                    datalabels: { //
-                        anchor: 'end', //
-                        align: 'top' //
-                    }
+            const chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Kwota wydatków (zł)',
+                        data: data,
+                        backgroundColor: 'rgba(21, 101, 192, 0.7)',
+                        borderColor: 'rgba(13, 71, 161, 1)',
+                        borderWidth: 1
+                    }]
                 },
-                {
-                    label: 'wydatki', //
-                    data: expensesDataForChart, //
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)', //
-                    borderColor: 'rgba(255, 99, 132, 1)', //
-                    borderWidth: 1, //
-                    datalabels: { //
-                        anchor: 'end', //
-                        align: 'bottom' //
-                    }
-                }]
-            },
-            options: { //
-                scales: { //
-                    x: { //
-                        stacked: false // Zmieniono na false, aby słupki były obok siebie, a nie na sobie
-                    },
-                    y: { //
-                        beginAtZero: true, //
-                        ticks: { //
-                            callback: function(value) { //
-                                return value.toLocaleString('pl-pl', { style: 'currency', currency: 'PLN' }); // Poprawiono formatowanie waluty
-                            }
-                        }
-                    }
-                },
-                responsive: true, //
-                plugins: { //
-                    datalabels: { //
-                        display: true, //
-                        formatter: function(value, context) {
-                            return value > 0 ? value.toLocaleString('pl-pl', { style: 'currency', currency: 'PLN' }) : '';
-                        },
-                        color: function(context) {
-                             return context.dataset.backgroundColor === 'rgba(54, 162, 235, 0.6)' ? 'navy' : 'maroon';
-                        },
-                        font: {
-                            weight: 'bold'
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    // Skrypt dla wykresu kołowego expensesPieChart
-    var expensesSumsByCategoryForMonthPie = @Html.Raw(Json.Serialize(ViewBag.ExpensesSumsByCategoryForMonth ?? new Dictionary<string, double>())); //
-    var pieCategories = Object.keys(expensesSumsByCategoryForMonthPie); //
-    var pieSums = Object.values(expensesSumsByCategoryForMonthPie); //
-
-    if (document.getElementById('expensesPieChart')) { // Sprawdzenie czy element istnieje
-        var ctxPie = document.getElementById('expensesPieChart').getContext('2d'); //
-        var expensesPieChart = new Chart(ctxPie, { //
-            type: 'pie', //
-            data: {
-                labels: pieCategories, //
-                datasets: [{ //
-                    data: pieSums, //
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', '#FFCD56', '#C9CBCF', '#F7464A', '#46BFBD', '#FDB45C', '#949FB1'], //
-                    hoverBackgroundColor: ['#FF4563', '#36A2C3', '#FFD045', '#4BFF9C', '#8A4DFF', '#FF7F51', '#FFDC4F', '#B8BCC1', '#F52F33', '#3EAAAB', '#FCA344', '#838DA0'] //
-                }]
-            },
-            options: { //
-                responsive: true, //
-                plugins: { //
-                    legend: { position: 'top' }, //
-                    tooltip: { //
-                        callbacks: { //
-                            label: function(tooltipItem) { //
-                                return tooltipItem.label + ': ' + tooltipItem.raw.toLocaleString('pl-PL', { style: 'currency', currency: 'PLN' }); //
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return value.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                }
                             }
                         }
                     },
-                    datalabels: { //
-                        formatter: (value, ctx) => { //
-                            let sum = ctx.dataset.data.reduce((a, b) => a + b, 0); //
-                            let percentage = (value * 100 / sum).toFixed(2) + '%'; //
-                            return percentage; //
+                    plugins: {
+                        legend: {
+                            display: false
                         },
-                        color: '#fff', //
-                        font: { weight: 'bold', size: 14 } //
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    const val = context.raw;
+                                    return val.toLocaleString('pl-PL', {style: 'currency', currency: 'PLN'});
+                                }
+                            }
+                        }
                     }
                 }
-            }
+            });
         });
-    }
+    </script>
 
-    // var expenseLabels = @Html.Raw(JsonSerializer.Serialize(ViewBag.ExpenseSumsByCategory?.Keys ?? new List<string>()));
-    // var expenseData = @Html.Raw(JsonSerializer.Serialize(ViewBag.ExpenseSumsByCategory?.Values ?? new List<double>()));
-    // if (document.getElementById('expensesChart')) {
-    //     var ctxOldPie = document.getElementById('expensesChart').getContext('2d');
-    //     var expensesChartOld = new Chart(ctxOldPie, {
-    //         type: 'pie',
-    //         data: {
-    //             labels: expenseLabels,
-    //             datasets: [{
-    //                 label: 'Wydatki wg kategorii',
-    //                 data: expenseData,
-    //                 backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-    //                 borderColor: '#ffffff',
-    //                 borderWidth: 1
-    //             }]
-    //         },
-    //         options: { responsive: true }
-    //     });
-    // }
-</script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx2 = document.getElementById('incomesVsExpensesChart').getContext('2d');
 
-<div class="row mb-4">
-    <div class="col-md-12">
-        <div class="card p-3">
-            <h5>Suma wydatków w danym roku (@selectedYear) według kategorii</h5>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Kategoria</th>
-                        <th>Suma wydatków</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (ViewBag.ExpensesSumsByCategory != null)
-                    {
-                        var expensesByCat = ViewBag.ExpensesSumsByCategory as Dictionary<string, double>;
-                        if (expensesByCat != null)
+            const labels2 = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                Enumerable.Range(1, 12).Select(i => System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(i))));
+
+            const incomesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                    ((Dictionary<int, double>)ViewBag.MonthlyIncomesSums).OrderBy(kv => kv.Key).Select(kv => kv.Value)));
+
+            const expensesData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+                                     ((Dictionary<int, double>)ViewBag.MonthlyExpensesSumsChart).OrderBy(kv => kv.Key).Select(kv => -kv.Value)));
+
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels2,
+                    datasets: [
                         {
-                            @foreach (var category in expensesByCat) //
-                            {
-                                <tr>
-                                    <td>@category.Key</td>
-                                    <td>@category.Value.ToString("C")</td>
-                                </tr>
+                            label: 'Dochody',
+                            data: incomesData,
+                            backgroundColor: 'rgba(46, 125, 50, 0.6)',
+                            borderColor: 'rgba(27, 94, 32, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Wydatki',
+                            data: expensesData,
+                            backgroundColor: 'rgba(211, 47, 47, 0.6)',
+                            borderColor: 'rgba(183, 28, 28, 1)',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            stacked: true,
+                        },
+                        y: {
+                            stacked: true,
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function (value) {
+                                    return Math.abs(value).toLocaleString('pl-PL', {
+                                        style: 'currency',
+                                        currency: 'PLN'
+                                    });
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return `${context.dataset.label}: ` +
+                                        Math.abs(context.raw).toLocaleString('pl-PL', {
+                                            style: 'currency',
+                                            currency: 'PLN'
+                                        });
+                                }
                             }
                         }
                     }
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
+                }
+            });
+        });
+    </script>
+}
 
 
-@* Wykres kołowy dla wydatków w WYBRANYM MIESIĄCU *@
-<div class="row mb-4">
-    <div class="col-md-6">
-        <div class="card p-3">
-            <h5>Suma wydatków w wybranym miesiącu (@monthName) według kategorii</h5>
-            <canvas id="expensesPieChart"></canvas> @* Upewnij się, że ID jest unikalne, jeśli masz już wykres o tym ID. Może 'expensesPieChartForMonth' *@
-        </div>
-    </div>
-</div>
+
+

@@ -2,7 +2,149 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+   <!-- Content -->
+<div class="container-fluid g-0" style="overflow-x: hidden">
+<!-- Hero z CTA -->
+<div class="container-fluid bg-hero text-white py-5">
+    <div class="container py-5">
+        <div class="row align-items-center">
+            <!-- Lewa kolumna: tekst i przycisk -->
+            <div class="col-md-6 text-center text-md-start mb-4 mb-md-0">
+                <h1 class="display-5 fw-bold">Zyskaj kontrolę nad budżetem</h1>
+                <p class="lead mt-3 mb-4">
+                    Dołącz do naszej aplikacji i zarządzaj wydatkami oraz dochodami w jednym miejscu. Łatwo, szybko i bezpiecznie.
+                </p>
+                <a href="/Identity/Account/Register" class="btn btn-dark btn-lg px-4">
+                    <i class="bi bi-person-plus me-2"></i> Załóż konto
+                </a>
+                <a href="/Identity/Account/Register" class="btn btn-light btn-lg px-4">
+                    <i class="bi bi-person-fill-lock me-2"></i> Zaloguj się
+                </a>
+            </div>
+
+            <!-- Prawa kolumna: obraz -->
+            <div class="col-md-6 text-center">
+                <img src="img/mockup1.png" alt="Zrzut ekranu aplikacji" class="img-fluid">
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Sekcja z cytatem -->
+<div class="row py-5 bg-quote">
+    <div class="col-12">
+        <div class="container">
+            <figure class="text-center">
+                <blockquote class="blockquote fs-4 fst-italic">
+                    „Dzięki tej aplikacji wiem, na co wydaję pieniądze. I niestety — ile na kebaba.”
+                </blockquote>
+                <figcaption class="blockquote-footer mt-2 text-muted">
+                    Marek <cite title="Source Title">lat 39</cite>
+                </figcaption>
+            </figure>
+        </div>
+    </div>
+</div>
+
+<!-- Funkcjonalności -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-6"><h2 class="fw-bold mb-3">Poznaj funkcjonalności naszej aplikacji</h2>
+                    <p class="text-muted mb-5 f-5">
+                        Nasze narzędzie to nie tylko arkusz kalkulacyjny — to Twój osobisty asystent finansowy. Dzięki intuicyjnemu interfejsowi, zaawansowanym wykresom i automatycznej analizie, zarządzanie domowym budżetem staje się zaskakująco przyjemne. No, prawie tak przyjemne jak sobotni poranek bez rachunków.
+                    </p></div>
+                
+            </div>
+           
+
+            <div class="row g-4">
+                <!-- Karta 1: Wydatki -->
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-cash-coin display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">Zarządzaj wydatkami</h5>
+                            <p class="card-text">
+                                Rejestruj swoje codzienne wydatki w kilku kliknięciach i miej pełen wgląd w to, gdzie znikają Twoje pieniądze.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 2: Dochody -->
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-piggy-bank display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">Monitoruj dochody</h5>
+                            <p class="card-text">
+                                Z łatwością zapisuj wpływy z pracy, inwestycji i innych źródeł. Wreszcie zobaczysz, ile naprawdę zarabiasz.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Karta 3: Dashboard -->
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-graph-up-arrow display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">Dashboard i statystyki</h5>
+                            <p class="card-text">
+                                Interaktywne wykresy, zestawienia i miesięczne podsumowania — wszystko, czego potrzebujesz, by zrozumieć swoje finanse.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Rząd 12: Informacja o projekcie -->
+<div class="container mb-5 py-5">
+    <div class="row align-items-center py-5">
+        <!-- Lewa kolumna: opis -->
+        <div class="col-md-6">
+            <h2 class="fw-bold mb-3">O projekcie</h2>
+            <p class="fs-5 mb-4">
+                Ten projekt został stworzony w ramach przedmiotu <strong>Programowanie w .NET</strong>.
+                Aplikacja ma na celu ułatwienie zarządzania finansami domowymi poprzez intuicyjny interfejs i przejrzyste statystyki.
+            </p>
+            <p class="fs-5 mb-4">
+                Autorami projektu są: <strong>Marta Starek-Piasny, Michał Brzeziński, Łukasz Rosicki   </strong>
+            </p>
+            <p class="fs-4">
+                Jesteśmy studentami semestru inżynierskiego na kierunku <strong>Informatyka</strong>.
+            </p>
+        </div>
+
+        <!-- Prawa kolumna: zdjęcie -->
+        <div class="col-md-6 text-center">
+            <img src="img/mockup2.png" alt="Kolejne zdjęcie aplikacji" class="img-fluid">
+        </div>
+    </div>
+</div>
+
+<!-- Powtórzone CTA -->
+<div class="row py-5 bg-quote">
+    <div class="col-12">
+        <div class="container text-center text-white py-5">
+            <h4 class="display-5 fw-bold">Dołącz już dziś!</h4>
+            <p class="lead mt-3 mb-4">
+                I kontroluj wydatki na kebaby!
+            </p>
+            <a href="/Identity/Account/Register" class="btn btn-dark btn-lg px-4">
+                <i class="bi bi-person-plus me-2"></i> Załóż konto
+            </a>
+            <a href="/Identity/Account/Register" class="btn btn-light btn-lg px-4">
+                <i class="bi bi-person-fill-lock me-2"></i> Zaloguj się
+            </a>
+        </div>
+    </div>
+</div>
+</div>
+
+

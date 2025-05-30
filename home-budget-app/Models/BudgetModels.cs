@@ -23,9 +23,10 @@ namespace home_budget_app.Models
         public DateTime Date { get; set; } = DateTime.Today;
 
         [Required]
-        [Range(typeof(decimal), "0.01", "79228162514264337593543950335")]
         [Column(TypeName = "decimal(18,2)"), Display(Name = "Kwota")]
+        [Range(typeof(decimal), "0,01", "10000", ErrorMessage = "Kwota musi być z zakresu od 0,01 do 10000")]
         public decimal Amount { get; set; }
+
 
         [StringLength(500), Display(Name = "Komentarz")]
         public string? Notes { get; set; }
@@ -47,8 +48,8 @@ namespace home_budget_app.Models
         public DateTime Date { get; set; } = DateTime.Today;
 
         [Required]
-        [Range(typeof(decimal), "0.01", "79228162514264337593543950335")]
         [Column(TypeName = "decimal(18,2)"), Display(Name = "Kwota")]
+        [Range(typeof(decimal), "0,01", "10000", ErrorMessage = "Kwota musi być z zakresu od 0,01 do 10000")]
         public decimal Amount { get; set; }
 
         [StringLength(500), Display(Name = "Komentarz")]
