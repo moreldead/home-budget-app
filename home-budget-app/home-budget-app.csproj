@@ -33,4 +33,8 @@
 	<ItemGroup>
 	  <Folder Include="Data\Migrations\" />
 	</ItemGroup>
+	<ItemGroup>
+  		<Content Include="homebudget.db"> <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+  	</Content>
+</ItemGroup>
 </Project> 
