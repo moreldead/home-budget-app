@@ -1,60 +1,348 @@
 ﻿@{
-ViewData["Title"] = "Dokumentacja";
+    ViewData["Title"] = "Dokumentacja";
 }
 
 <div class="content container-fluid p-5">
-    <!-- Rząd Dokumentacja -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card p-3">
-            
+            <div class="card p-4">
                 <div class="card-body">
-                    <h2 class="mb-3">Dodawanie nowego wpisu</h2>
-
+                    <h2 id="wprowadzenie" class="mb-4">1. Wprowadzenie</h2>
                     <p>
-                        Poniżej przedstawiono przykład użycia formularza do dodawania nowego wpisu budżetowego. 
-                        Formularz zawiera pola: kategoria, data, kwota i notatka. Dane po zapisaniu trafiają do tabeli.
+                        FinNapka to nowoczesna aplikacja webowa służąca do zarządzania finansami osobistymi.
+                        Umożliwia użytkownikom łatwe i intuicyjne rejestrowanie dochodów i wydatków, kontrolę nad budżetem
+                        oraz wizualizację danych w formie przejrzystych wykresów i raportów.
                     </p>
 
-                    <pre class="bg-light p-3 rounded"><code class="language-html">
-&lt;form&gt;
-  &lt;input type="date" /&gt;
-  &lt;input type="text" placeholder="Kwota" /&gt;
-  &lt;input type="text" placeholder="Notatka" /&gt;
-  &lt;button type="submit"&gt;Zapisz&lt;/button&gt;
-&lt;/form&gt;
-                </code></pre>
+                    <h2 id="cel" class="mt-5 mb-4">2. Cel</h2>
+                    <ul>
+                        <li>Zarządzanie codziennymi wydatkami i przychodami</li>
+                        <li>Analiza struktury finansów</li>
+                        <li>Budowanie nawyków budżetowych</li>
+                        <li>Kontrola nad przepływami pieniężnymi</li>
+                    </ul>
 
-                    <div class="mb-4">
-                        <img src="https://via.placeholder.com/800x300" class="img-fluid rounded" alt="Przykładowy zrzut ekranu">
-                    </div>
-                    <hr class="pb-5">
-				
-                    <h2 class="mb-3">Dodawanie nowego wpisu</h2>
-
+                    <h2 id="opis" class="mt-5 mb-4">3. Opis</h2>
                     <p>
-                        Poniżej przedstawiono przykład użycia formularza do dodawania nowego wpisu budżetowego. 
-                        Formularz zawiera pola: kategoria, data, kwota i notatka. Dane po zapisaniu trafiają do tabeli.
+                        Aplikacja działa w modelu klient–serwer i bazuje na architekturze MVC. Kluczowe funkcje:
+                    </p>
+                    <ul>
+                        <li>Dodawanie i kategoryzacja transakcji</li>
+                        <li>Filtrowanie i przeglądanie listy transakcji</li>
+                        <li>Podsumowania miesięczne i roczne</li>
+                        <li>Rejestracja/logowanie użytkownika</li>
+                    </ul>
+
+                    <h2 id="funkcje" class="mt-5 mb-4">4. Funkcjonalności</h2>
+                    <ul>
+                        <li>Rejestracja i logowanie użytkownika</li>
+                        <li>Kategoryzacja wydatków i dochodów</li>
+                        <li>Wyszukiwanie i filtrowanie danych</li>
+                        <li>Podsumowania i wizualizacje</li>
+                        <li>Edycja i usuwanie wpisów</li>
+                        <li>Responsywny interfejs</li>
+                    </ul>
+
+                    <h2 id="azure" class="mt-5 mb-4">5. Migracja aplikacji do Azure</h2>
+                    <p>
+                        Aplikacja do zarządzania budżetem domowym została wdrożona na platformie chmurowej <strong>Microsoft Azure</strong>.
+                        Celem tego wdrożenia było <strong>zautomatyzowanie procesu publikacji</strong> oraz aktualizacji poprzez CI/CD.
+                        Aplikacja jest hostowana w usłudze <strong>Azure App Service</strong>.
                     </p>
 
-                    <pre class="bg-light p-3 rounded"><code class="language-html">
-&lt;form&gt;
-  &lt;input type="date" /&gt;
-  &lt;input type="text" placeholder="Kwota" /&gt;
-  &lt;input type="text" placeholder="Notatka" /&gt;
-  &lt;button type="submit"&gt;Zapisz&lt;/button&gt;
-&lt;/form&gt;
-                </code></pre>
+                    <p>
+                        Kluczowym elementem procesu wdrażania jest pipeline CI/CD zbudowany z użyciem <strong>GitHub Actions</strong>.
+                        Zamiast ręcznego publikowania aplikacji, proces odbywa się automatycznie:
+                    </p>
+
+                    <ul>
+                        <li>Każda zmiana w gałęzi <code>main</code> repozytorium Git inicjuje workflow,</li>
+                        <li>Aplikacja jest kompilowana i testowana w środowisku CI,</li>
+                        <li>Po pozytywnym wyniku testów następuje automatyczne wdrożenie w trybie <code>Release</code> na Azure App Service.</li>
+                    </ul>
+
+                    <p>
+                        Takie podejście zapewnia:
+                    </p>
+
+                    <ul>
+                        <li>szybkie i powtarzalne wdrożenia,</li>
+                        <li>redukcję błędów ludzkich,</li>
+                        <li>ciągłość działania aplikacji w wersji produkcyjnej.</li>
+                    </ul>
+
+                    <p>
+                        Aplikacja jest publicznie dostępna pod adresem:<br />
+                        <a href="https://homebudgetapp-adcufndnh9ccfcft.westeurope-01.azurewebsites.net/" target="_blank">
+                            homebudgetapp-adcufndnh9ccfcft.westeurope-01.azurewebsites.net
+                        </a>
+                    </p>
+
+                    <p>
+                        Strona działa z pełnym wsparciem protokołu <strong>HTTPS</strong> i oferuje użytkownikom wszystkie funkcjonalności niezbędne do zarządzania budżetem online.
+                    </p>
+                    <div class="mb-4">
+                        <img src="~/img/docs1.png" class="img-fluid rounded" alt="Zrzut ekranu logowania">
+                    </div>
+
+                    <h2 id="logowanie" class="mt-5 mb-4">6. Logowanie i rejestracja</h2>
+                    <p>
+                        Funkcjonalność logowania jest kluczowym mechanizmem <strong>kontroli dostępu</strong> w aplikacji,
+                        zapewniającym ochronę prywatnych danych użytkownika. Cały system uwierzytelniania został zbudowany
+                        przy użyciu frameworka <strong>ASP.NET Core Identity</strong>.
+                    </p>
+
+                    <p>
+                        Framework ten dostarcza wielowarstwowe, wbudowane zabezpieczenia, które zostały w pełni wykorzystane w projekcie.
+                        Hasła użytkowników są <strong>bezpiecznie przechowywane</strong> w bazie danych w postaci <strong>zahaszowanej</strong>,
+                        co uniemożliwia ich odczytanie nawet w przypadku uzyskania dostępu do bazy danych.
+                    </p>
+
+                    <p>
+                        Dodatkowo, cała komunikacja z serwerem podczas logowania jest <strong>szyfrowana</strong> za pomocą protokołu <strong>HTTPS</strong>.
+                        Po poprawnym zalogowaniu aplikacja zarządza <strong>sesją użytkownika</strong>, zapewniając mu dostęp do
+                        spersonalizowanego panelu oraz funkcji przypisanych do konta.
+                    </p>
 
                     <div class="mb-4">
-                        <img src="https://via.placeholder.com/800x300" class="img-fluid rounded" alt="Przykładowy zrzut ekranu">
+                        <img src="~/img/docs2.png" class="img-fluid rounded" alt="Zrzut ekranu logowania">
                     </div>
-                    <hr class="pb-5">
-				
+
+                    <h2 id="rejestracja" class="mt-5 mb-4">7. Rejestracja</h2>
+
+                    <p>
+                        Formularz rejestracyjny umożliwia utworzenie nowego konta użytkownika i zawiera następujące pola:
+                    </p>
+
+                    <ul>
+                        <li><strong>Email</strong> – adres e-mail użytkownika (unikalny)</li>
+                        <li><strong>Hasło</strong> – musi spełniać wymogi złożoności</li>
+                        <li><strong>Potwierdzenie hasła</strong> – musi być zgodne z hasłem</li>
+                    </ul>
+
+                    <p>
+                        Walidacja danych jest realizowana zarówno <strong>po stronie klienta</strong> (JavaScript, atrybuty HTML),
+                        jak i <strong>po stronie serwera</strong> – z wykorzystaniem <code>ASP.NET Core Identity</code>.
+                    </p>
+
+                    <p>
+                        Po poprawnym wypełnieniu formularza i zatwierdzeniu rejestracji, użytkownik jest <strong>automatycznie logowany</strong>
+                        i przekierowywany do swojego spersonalizowanego panelu.
+                    </p>
+
+                             <div class="mb-4">
+                        <img src="~/img/docs3.png" class="img-fluid rounded" alt="Zrzut ekranu rejestracji">
+                    </div>
+
+                    <h2 id="architektura" class="mt-5 mb-4">8. Architektura aplikacji (MVC)</h2>
+
+                    <h4 class="mt-4">Model</h4>
+                    <p>
+                        Warstwa modelu odpowiada za reprezentację danych aplikacji (plik <code>BudgetModels.cs</code>) oraz logikę domenową związaną z budżetowaniem użytkownika.
+                        Poniżej przedstawiono najważniejsze klasy:
+                    </p>
+
+                    <ul>
+                        <li><strong>ApplicationUser</strong>: Rozszerza <code>IdentityUser</code>. Zawiera kolekcje <code>Expenses</code> i <code>Incomes</code>.</li>
+                        <li><strong>Expense</strong>: Wydatek użytkownika – posiada m.in. <code>Id</code>, <code>Category</code>, <code>Date</code>, <code>Amount</code>, <code>Notes</code>, <code>UserId</code>.</li>
+                        <li><strong>Income</strong>: Przychód użytkownika – podobna struktura jak Expense.</li>
+                        <li><strong>ExpenseCategory</strong> i <strong>IncomeCategory</strong>: Enumy z nazwami wyświetlanymi przez <code>[Display(Name = "...")]</code>.</li>
+                        <li><strong>ExpenseSummary / IncomeSummary</strong>: Agregacja danych wg kategorii.</li>
+                        <li><strong>MonthlySummaryViewModel</strong>: Widok podsumowania – zawiera <code>MonthNumber</code>, <code>MonthName</code>, <code>TotalExpenses</code>, <code>TotalIncomes</code>.</li>
+                    </ul>
+
+                    <p>
+                        Model korzysta z atrybutów walidacyjnych takich jak <code>[Required]</code>, <code>[Range]</code>, <code>[Column]</code>, <code>[ForeignKey]</code>, co zapewnia integralność danych i poprawne odwzorowanie w bazie.
+                    </p>
+
+                    <h4 class="mt-4">View</h4>
+                    <p>
+                        Warstwa widoku zawiera wszystkie elementy interfejsu użytkownika:
+                    </p>
+                    <ul>
+                        <li>Formularze dodawania wydatków i przychodów</li>
+                        <li>Dashboard z wykresami</li>
+                        <li>Widoki listy operacji i szczegółów wpisu</li>
+                    </ul>
+
+                    <p>Aplikacja zawiera 4 główne zakładki:</p>
+                    <ul>
+                        <li><strong>Dashboard</strong>: wykresy kołowe i słupkowe, sumy kategorii, historia operacji</li>
+                        <li><strong>Przychody</strong>: lista dochodów z możliwością filtrowania, edycji i usuwania</li>
+                        <li><strong>Wydatki</strong>: analogiczna funkcjonalność jak przychody</li>
+                        <li><strong>Operacje</strong>: podsumowanie wszystkich operacji</li>
+                    </ul>
+
+                    <div class="mb-4">
+                        <img src="~/img/docs5.png" class="img-fluid rounded" alt="Zrzut przychodów">
+                    </div>
+
+                    <h4 class="mt-4">Kontrolery</h4>
+                    <p>
+                        Architektura oparta na wzorcu <strong>Model-View-Controller</strong> zakłada, że kontrolery odpowiadają za przetwarzanie żądań i łączenie modelu z widokiem:
+                    </p>
+
+                    <ul>
+                        <li><strong>HomeController</strong>: strona główna aplikacji.</li>
+                        <li><strong>IncomesController</strong>: pełna obsługa CRUD dla przychodów, sortowanie, filtrowanie.</li>
+                        <li><strong>ExpensesController</strong>: identyczna obsługa CRUD dla wydatków.</li>
+                        <li><strong>DashboardController</strong>: przetwarzanie danych na potrzeby wizualizacji i podsumowań (bez CRUD).</li>
+                    </ul>
+
+                    <div class="mb-4">
+                        <img src="~/img/docs6.png" class="img-fluid rounded" alt="Zrzut ekanu edycji wpisu">
+                    </div>
+
+                    <div class="mb-4">
+                        <img src="~/img/docs7.png" class="img-fluid rounded" alt="Zrzut ekanu usuwania wpisu">
+                    </div>
+
+                    <p>
+                        <strong>DashboardController</strong> odpowiada za przekształcanie danych przychodów i wydatków do postaci wykresów i raportów. Typowe operacje to:
+                    </p>
+                    <ul>
+                        <li>Pobranie wydatków/przychodów zalogowanego użytkownika z danego okresu,</li>
+                        <li>Grupowanie wg kategorii,</li>
+                        <li>Sumowanie kwot w grupach,</li>
+                        <li>Agregacja danych dla wykresów kołowych, słupkowych i linii czasowych.</li>
+                    </ul>
+
+                    <div class="mb-4">
+                        <img src="~/img/docs4.png" class="img-fluid rounded" alt="Zrzut ekranu dashboardu">
+                    </div>
+
+                    <h2 id="baza" class="mt-5 mb-4">9. Opis bazy danych i struktura folderów</h2>
+
+                    <p>
+                        Plik <code>ApplicationDbContext.cs</code> definiuje główny kontekst bazy danych w aplikacji <strong>FinNapka</strong>.
+                        Jego zadaniem jest skonfigurowanie połączenia z bazą danych, określenie sposobu przechowywania i relacji danych,
+                        a także integracja z <strong>ASP.NET Core Identity</strong> w celu uwierzytelniania użytkowników.
+                    </p>
+
+                    <h4 class="mt-4">Główne funkcje ApplicationDbContext:</h4>
+                    <ul>
+                        <li><strong>Zarządzanie użytkownikami</strong> (logowanie, rejestracja, role)</li>
+                        <li><strong>Obsługa danych finansowych</strong>: tabele <code>Expenses</code> i <code>Incomes</code></li>
+                        <li><strong>Zarządzanie kategoriami</strong> – przypisywanie transakcji do kategorii, filtrowanie po kategoriach</li>
+                        <li><strong>Powiązania między danymi</strong> – relacje 1:N i ustawienia zachowania przy usuwaniu</li>
+                    </ul>
+
+                    <h4 class="mt-4">Przykładowe relacje:</h4>
+                    <ul>
+                        <li><code>Category</code> → wiele <code>Expenses</code> i <code>Budgets</code></li>
+                        <li><code>Expense</code> → jedna <code>Category</code></li>
+                        <li><code>Budget</code> → jedna <code>Category</code></li>
+                    </ul>
+
+                    <h4 class="mt-4">Walidacja i integralność danych:</h4>
+                    <ul>
+                        <li>Kwoty przechowywane jako <code>decimal(18,2)</code> – wysoka precyzja</li>
+                        <li><code>Date</code> jako pole wymagane (<code>IsRequired()</code>)</li>
+                        <li><code>Category.Name</code> z unikalnym indeksem (<code>IsUnique()</code>)</li>
+                    </ul>
+
+                    <h4 class="mt-4">Seeding danych:</h4>
+                    <p>
+                        Podczas pierwszego uruchomienia aplikacji w bazie tworzone są predefiniowane kategorie, np. <em>Mieszkanie</em>, <em>Jedzenie</em>, <em>Rozrywka</em>.
+                    </p>
+
+                    <p>
+                        Baza danych zawiera przykładowe dane testowe:
+                    </p>
+                    <ul>
+                        <li><strong>482</strong> rekordy wydatków</li>
+                        <li><strong>32</strong> rekordy przychodów</li>
+                        <li>Zakres czasowy danych: <strong>styczeń 2024 – czerwiec 2025</strong></li>
+                    </ul>
+
+                    <h4 class="mt-4">Podsumowanie:</h4>
+                    <p>
+                        Plik <code>ApplicationDbContext.cs</code> pełni rolę <strong>serca warstwy danych</strong> aplikacji.
+                        Dzięki niemu możliwe jest:
+                    </p>
+                    <ul>
+                        <li>zarządzanie użytkownikami i bezpieczeństwem,</li>
+                        <li>obsługa danych finansowych i transakcji,</li>
+                        <li>definiowanie powiązań i zależności,</li>
+                        <li>utrzymanie integralności danych,</li>
+                        <li>wstępna inicjalizacja systemu (seeding).</li>
+                    </ul>
+                    <p>
+                        Wszystkie główne funkcje aplikacji FinNapka bazują na strukturze i konfiguracji zdefiniowanej właśnie w tym pliku.
+                    </p>
+
+                    <div class="mb-4">
+                        <img src="~/img/docs8.png" class="img-fluid rounded" alt="Struktura bazy danych">
+                    </div>
+
+                    <h2 id="testy" class="mt-5 mb-4">10. Testy</h2>
+
+                    <p>
+                        Testy jednostkowe zostały zaimplementowane z użyciem frameworka <strong>xUnit</strong>.
+                        Ich celem było sprawdzenie poprawności działania kontrolerów backendu odpowiedzialnych za przychody (<code>IncomesController</code>)
+                        oraz wydatki (<code>ExpensesController</code>).
+                    </p>
+
+                    <p>
+                        W ramach testów sprawdzono operacje CRUD:
+                    </p>
+                    <ul>
+                        <li><strong>Index</strong> – pobieranie listy wpisów</li>
+                        <li><strong>Create</strong> – dodawanie nowej transakcji</li>
+                        <li><strong>Edit</strong> – edycja istniejącej transakcji</li>
+                        <li><strong>Details</strong> – wyświetlanie szczegółów wpisu</li>
+                        <li><strong>Delete</strong> – usuwanie wpisu</li>
+                    </ul>
+
+                    <p>
+                        Struktura testów została uporządkowana w osobnym folderze projektu. Dla każdego kontrolera utworzono dedykowany zestaw testów.
+                        Testy były uruchamiane lokalnie za pomocą konsoli.
+                    </p>
+
+                    <p>Wymagane było dodanie pakietu NuGet <code>xunit</code> oraz odpowiednich zależności do projektu testowego.</p>
+
+                    <!-- Możesz dodać obrazek z uruchomienia testów w Visual Studio lub CLI -->
+                    <div class="mb-4">
+                        <img src="~/img/docs9.png" class="img-fluid rounded" alt="Zrzut ekranu testów">
+                    </div>
+                    <div class="mb-4">
+                        <img src="~/img/docs10.png" class="img-fluid rounded" alt="Zrzut ekranu testów">
+                    </div>
+                    <div class="mb-4">
+                        <img src="~/img/docs11.png" class="img-fluid rounded" alt="Zrzut ekranu testów">
+                    </div>
+                    <div class="mb-4">
+                        <img src="~/img/docs12.png" class="img-fluid rounded" alt="Zrzut ekranu testów">
+                    </div>
+
+                    <h2 id="podsumowanie" class="mt-5 mb-4">11. Podsumowanie</h2>
+
+                    <p>
+                        <strong>FinNapka</strong> to intuicyjna aplikacja finansowa, która wspiera użytkowników w zarządzaniu budżetem osobistym.
+                        Umożliwia rejestrację dochodów i wydatków, automatyczną kategoryzację transakcji, monitorowanie salda oraz analizę finansów w czasie rzeczywistym.
+                    </p>
+
+                    <p>
+                        Dzięki wykresom i czytelnym raportom użytkownik zyskuje pełną kontrolę nad swoimi finansami.
+                    </p>
+
+                    <h5 class="mt-4">Planowane rozszerzenia:</h5>
+                    <ul>
+                        <li>
+                            <strong>Moduł zarządzania długami i kredytami</strong> – dodawanie zobowiązań, harmonogram spłat, przypomnienia, nadpłaty.
+                        </li>
+                        <li>
+                            <strong>Obsługa oszczędności dewizowych</strong> – środki w walutach obcych (EUR, USD, CHF), automatyczne kursy z NBP, analiza różnic kursowych.
+                        </li>
+                    </ul>
+
+                    <p>
+                        FinNapka ma potencjał, aby stać się kompleksowym narzędziem do zarządzania domowym budżetem, oszczędnościami i zobowiązaniami w jednym miejscu.
+                    </p>
+
+
                 </div>
             </div>
         </div>
     </div>
-
-	
 </div>
